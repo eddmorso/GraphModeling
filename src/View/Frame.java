@@ -1,11 +1,8 @@
 package View;
-import Model.Vertex;
-import com.sun.xml.internal.messaging.saaj.soap.JpegDataContentHandler;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 public class Frame extends JFrame{
     private JPanel background = new JPanel();

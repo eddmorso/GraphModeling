@@ -1,8 +1,5 @@
 package View;
 
-import Model.Connection;
-import Model.Vertex;
-
 import javax.swing.*;
 import java.awt.*;
 

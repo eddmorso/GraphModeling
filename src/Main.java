@@ -1,5 +1,3 @@
-package Controller;
-
 import View.Figure;
 import View.Frame;
 

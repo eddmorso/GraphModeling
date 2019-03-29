@@ -1,4 +1,6 @@
-package Model;
+package View;
+
+import View.Vertex;
 
 public class Connection {
     private int weight;

@@ -1,10 +1,7 @@
 package View;
 
-import Model.Vertex;
-
 import javax.swing.*;
 import java.awt.*;
-import java.nio.charset.spi.CharsetProvider;
 
 public class Circle extends JComponent {
     private int x, y;

@@ -2,7 +2,7 @@ package Controller;
 
 import View.Figure;
 import View.Frame;
-import View.Panel;
+
 import com.sun.xml.internal.messaging.saaj.soap.JpegDataContentHandler;
 
 import javax.swing.*;

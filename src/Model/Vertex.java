@@ -1,6 +1,11 @@
 package Model;
 
-public class Vertex {
+import View.MouseMovementsListener;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class Vertex extends JPanel {
 
     private static int counter;
     private int id, weight, x, y;
@@ -31,5 +36,28 @@ public class Vertex {
 
     public int getY() {
         return y;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        setSize(60,60);
+        setBackground(Color.green);
+
+        g.setColor(Color.black);
+        g.fillOval(x - 25, y - 25, 50, 50);
+
+        String weight = String.valueOf(getWeight());
+        String id = String.valueOf(getId());
+
+        g.setColor(Color.white);
+        g.drawString(weight, x - 3, y + 16);
+        g.drawLine(x - 15, y, x + 15, y);
+        g.drawString(id, x - 3, y - 8);
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(60,60);
     }
 }

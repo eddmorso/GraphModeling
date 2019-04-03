@@ -2,6 +2,9 @@ package View;
 
 import View.Vertex;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class Connection {
     private int weight;
     private Vertex startVertex, endVertex;
@@ -27,4 +30,5 @@ public class Connection {
     public int getWeight() {
         return weight;
     }
+
 }

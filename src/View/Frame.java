@@ -49,7 +49,7 @@ public class Frame{
         background = new MyPanel();
         background.setLayout(null);
         background.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        background.setBackground(Color.white);
+        background.setClear(true);
 
         Box buttonBox = new Box(BoxLayout.X_AXIS);
 
@@ -96,6 +96,7 @@ public class Frame{
                 background.repaint();
                 connectionArrayList.clear();
                 vertexArrayList.clear();
+                Vertex.setCounterToZero();
             }
         });
         buttonBox.add(drawButton);

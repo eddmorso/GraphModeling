@@ -19,6 +19,10 @@ public class Vertex extends JPanel {
         setSize(50,50);
     }
 
+    public static void setCounterToZero(){
+        counter = 0;
+    }
+
     public void setWeight(int weight) {
         this.weight = weight;
     }

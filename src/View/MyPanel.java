@@ -37,10 +37,10 @@ class MyPanel extends JPanel {
         }
         if(able) {
             g.setColor(Color.red);
-
             g.drawLine(initialX + 25, initialY + 25, endX + 25, endY + 25);
+
             if(initialX > endX){
-                g.drawString(String.valueOf(connectionWeight), endX + 30, endY + 25);
+                g.drawString(String.valueOf(connectionWeight), endX + (initialX - endX) / 2, endY + 25);
             }else {
                 g.drawString(String.valueOf(connectionWeight), endX - 20, endY + 25);
             }

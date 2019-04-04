@@ -6,7 +6,6 @@ public class Vertex implements Serializable {
     public static int counter;
     private int id, weight, x, y;
 
-
     public Vertex(int weight, int x, int y){
         id = counter;
         this.weight = weight;

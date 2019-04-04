@@ -88,8 +88,10 @@ public class Frame implements Serializable {
         JTextField setWeightField = new JTextField();
 
         JComboBox jComboBoxVertex = new JComboBox();
+        jComboBoxVertex.addItem("none");
 
         JComboBox jComboBoxConnection = new JComboBox();
+        jComboBoxConnection.addItem("none");
 
         Box configButtonBox = new Box(BoxLayout.Y_AXIS);
 
@@ -128,12 +130,6 @@ public class Frame implements Serializable {
 
         JButton deleteButton = new JButton("delete");
         deleteButton.setMaximumSize(new Dimension(200,25));
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
 
         editButtonBox.add(editVertexButton);
         editButtonBox.add(Box.createRigidArea(new Dimension(0,5)));
@@ -379,8 +375,15 @@ public class Frame implements Serializable {
             public void actionPerformed(ActionEvent e) {
                 vertexArrayList.clear();
                 connectionArrayList.clear();
+
                 jComboBoxVertex.removeAllItems();
                 jComboBoxConnection.removeAllItems();
+
+                Vertex.counter = 0;
+
+                jComboBoxVertex.addItem("none");
+                jComboBoxConnection.addItem("none");
+
                 gridPanel.repaint();
             }
         });
@@ -415,6 +418,9 @@ public class Frame implements Serializable {
                 jComboBoxVertex.removeAllItems();
                 jComboBoxConnection.removeAllItems();
 
+                jComboBoxVertex.addItem("none");
+                jComboBoxConnection.addItem("none");
+
                 for(int i = 0; i < vertexArrayList.size(); i++){
                     jComboBoxVertex.addItem(vertexArrayList.get(i).getId());
                 }
@@ -424,6 +430,55 @@ public class Frame implements Serializable {
                     jComboBoxConnection.addItem(connectionName);
                 }
 
+                gridPanel.repaint();
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                int vertexId = -1;
+                String connectionName = "";
+
+                if(!jComboBoxVertex.getSelectedItem().equals("none")){
+
+                    vertexId = (int) jComboBoxVertex.getSelectedItem();
+
+                    for(Vertex vertex : vertexArrayList){
+                        if(vertex.getId() == vertexId){
+                            ArrayList<Connection> removeList = new ArrayList<>();
+                            for(Connection connection : connectionArrayList){
+                                if(connection.getStartVertex().equals(vertex) || connection.getEndVertex().equals(vertex)){
+                                    String conName = connection.getStartVertex().getId() + "/" + connection.getEndVertex().getId();
+                                    removeList.add(connection);
+                                    jComboBoxConnection.removeItem(conName);
+                                }
+                            }
+                            jComboBoxVertex.removeItem(vertexId);
+                            vertexArrayList.remove(vertex);
+                            connectionArrayList.removeAll(removeList);
+                            break;
+                        }
+                    }
+                }
+                if(!jComboBoxConnection.getSelectedItem().equals("none")){
+
+                    connectionName += jComboBoxConnection.getSelectedItem();
+
+                    String [] sides = connectionName.split("/");
+
+                    int startVertexId = Integer.valueOf(sides[0]);
+                    int endVertexId = Integer.valueOf(sides[1]);
+
+                    for(Connection connection : connectionArrayList){
+                        if(connection.getStartVertex().getId() == startVertexId && connection.getEndVertex().getId() == endVertexId){
+                            jComboBoxConnection.removeItem(connectionName);
+                            connectionArrayList.remove(connection);
+                            break;
+                        }
+                    }
+                }
                 gridPanel.repaint();
             }
         });

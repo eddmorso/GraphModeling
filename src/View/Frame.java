@@ -112,21 +112,9 @@ public class Frame implements Serializable {
 
         JButton editVertexButton = new JButton("edit vertex");
         editVertexButton.setMaximumSize(new Dimension(200,25));
-        editVertexButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
 
         JButton editConnectionButton = new JButton("edit connection");
         editConnectionButton.setMaximumSize(new Dimension(200,25));
-        editConnectionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
 
         JButton deleteButton = new JButton("delete");
         deleteButton.setMaximumSize(new Dimension(200,25));
@@ -433,7 +421,71 @@ public class Frame implements Serializable {
                 gridPanel.repaint();
             }
         });
+        editVertexButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!editVertexWeightField.getText().equals("") && !jComboBoxVertex.getSelectedItem().equals("none")){
+                    String s = "";
+                    char arr [] = editVertexWeightField.getText().toCharArray();
+                    for(int i = 0; i < arr.length; i++){
+                        if(arr[i] >= 48 && arr[i] <= 57){
+                            s += arr[i];
+                        }
+                    }
+                    if(!s.equals("")){
+                        int weight = Integer.valueOf(s);
+                        int id = (int) jComboBoxVertex.getSelectedItem();
 
+                        for(Vertex vertex : vertexArrayList){
+                            if(vertex.getId() == id){
+                                vertex.setWeight(weight);
+                                editVertexWeightField.setText("");
+                                gridPanel.repaint();
+                                break;
+                            }
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Unexpected token");
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Pick the weight and vertex");
+                }
+            }
+        });
+        editConnectionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!jComboBoxConnection.getSelectedItem().equals("none") && !editConnectionWeightField.getText().equals("")){
+                    String s = "";
+                    char arr [] = editConnectionWeightField.getText().toCharArray();
+                    for(int i = 0; i < arr.length; i++){
+                        if(arr[i] >= 48 && arr[i] <= 57){
+                            s += arr[i];
+                        }
+                    }
+                    if(!s.equals("")){
+                        int weight = Integer.valueOf(s);
+                        String [] sides = jComboBoxConnection.getSelectedItem().toString().split("/");
+
+                        for(Connection connection : connectionArrayList){
+                            if(connection.getStartVertex().getId() == Integer.valueOf(sides[0]) &&
+                                    connection.getEndVertex().getId() == Integer.valueOf(sides[1])){
+
+                                connection.setWeight(weight);
+                                System.out.println("Connection weight seted to: " + connection.getWeight());
+                                editConnectionWeightField.setText("");
+                                gridPanel.repaint();
+                                break;
+                            }
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Unexpected token");
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Pick the weight and connection");
+                }
+            }
+        });
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

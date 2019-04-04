@@ -3,9 +3,12 @@ package View;
 import org.omg.PortableInterceptor.INACTIVE;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -38,12 +41,6 @@ public class Frame implements Serializable {
         JMenu fileMenu = new JMenu("File");
         JMenuItem newItem = new JMenuItem("New");
         JMenuItem saveItem = new JMenuItem("Save");
-        saveItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         JMenuItem openItem = new JMenuItem("Open");
         openItem.addActionListener(new ActionListener() {
             @Override
@@ -312,17 +309,6 @@ public class Frame implements Serializable {
             }
         });
 
-        newItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                vertexArrayList.clear();
-                connectionArrayList.clear();
-                jComboBoxVertex.removeAllItems();
-                jComboBoxConnection.removeAllItems();
-                gridPanel.repaint();
-            }
-        });
-
         connectionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -399,6 +385,38 @@ public class Frame implements Serializable {
                 });
 
                 connectionFrame.setVisible(true);
+            }
+        });
+
+        newItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                vertexArrayList.clear();
+                connectionArrayList.clear();
+                jComboBoxVertex.removeAllItems();
+                jComboBoxConnection.removeAllItems();
+                gridPanel.repaint();
+            }
+        });
+
+        saveItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                JFileChooser jFileChooser = new JFileChooser();
+                jFileChooser.showSaveDialog(jFrame);
+
+                Saver saver = new Saver();
+
+                File file = jFileChooser.getSelectedFile();
+                String fileName = file.getAbsolutePath();
+
+                if(fileName.endsWith(".ser")){
+                    saver.save(file);
+                }else {
+                    fileName += ".ser";
+                    saver.save(new File(fileName));
+                }
             }
         });
 

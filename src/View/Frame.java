@@ -472,7 +472,6 @@ public class Frame implements Serializable {
                                     connection.getEndVertex().getId() == Integer.valueOf(sides[1])){
 
                                 connection.setWeight(weight);
-                                System.out.println("Connection weight seted to: " + connection.getWeight());
                                 editConnectionWeightField.setText("");
                                 gridPanel.repaint();
                                 break;

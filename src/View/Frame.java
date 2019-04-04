@@ -249,25 +249,30 @@ public class Frame implements Serializable {
 
                 String textField = setXField.getText();
                 String textField1 = setYField.getText();
+                String textField2 = setWeightField.getText();
                 String numX = "";
                 String numY = "";
-                if(!textField.equals("") && !textField1.equals("")){
+                String numW = "";
+                if(!textField.equals("") && !textField1.equals("") && !textField2.equals("")){
                     char characters [] = textField.toCharArray();
                     char characters1 [] = textField1.toCharArray();
+                    char characters2 [] = textField2.toCharArray();
                     if(characters.length <= 2 && characters1.length <= 2) {
-                        for(int i = 0; i < characters.length; i++) {
-                            if (characters[i] >= 48 && characters[i] <=57) {
-                                numX += (characters[i]);
-                            }
+                        numX = checkCharacters(characters);
+                        numY = checkCharacters(characters1);
+                        numW = checkCharacters(characters2);
+                        if(numW.equals("")){
+                            return;
                         }
-                        for(int i = 0; i < characters1.length; i++) {
-                            if (characters1[i] >= 48 && characters1[i] <=57) {
-                                numY += (characters1[i]);
-                            }
-                        }
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Unexpected axis range");
+                        return;
                     }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Empty field");
+                    return;
                 }
-                if(!numX.equals("") && Integer.valueOf(numX) < 15 && !numY.equals("") && Integer.valueOf(numY) < 15){
+                if(!numX.equals("") && Integer.valueOf(numX) < 14 && !numY.equals("") && Integer.valueOf(numY) < 14){
                     boolean able = true;
                     for(Vertex vertex : vertexArrayList){
                         if(vertex.getX() == Integer.valueOf(numX) * gridPanel.width &&
@@ -287,9 +292,23 @@ public class Frame implements Serializable {
                         setWeightField.setText("");
                         gridPanel.repaint();
                     }else{
-                        System.out.println("something wrong");
+                        JOptionPane.showMessageDialog(null, "This Spot is already taken");
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Unexpected axis range");
+                }
+            }
+            public String checkCharacters(char [] arr){
+                String s = "";
+                for(int i = 0; i < arr.length; i++) {
+                    if (arr[i] >= 48 && arr[i] <=57) {
+                        s += (arr[i]);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Unexpected token");
+                        return s;
                     }
                 }
+                return s;
             }
         });
 

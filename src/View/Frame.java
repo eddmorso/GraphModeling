@@ -42,12 +42,6 @@ public class Frame implements Serializable {
         JMenuItem newItem = new JMenuItem("New");
         JMenuItem saveItem = new JMenuItem("Save");
         JMenuItem openItem = new JMenuItem("Open");
-        openItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         fileMenu.add(newItem);
         fileMenu.add(saveItem);
         fileMenu.add(openItem);
@@ -94,14 +88,8 @@ public class Frame implements Serializable {
         JTextField setWeightField = new JTextField();
 
         JComboBox jComboBoxVertex = new JComboBox();
-        for(int i = 0; i < vertexArrayList.size(); i++){
-            jComboBoxVertex.addItem(vertexArrayList.get(i).getId());
-        }
 
         JComboBox jComboBoxConnection = new JComboBox();
-        for(int i = 0; i < connectionArrayList.size(); i++){
-            jComboBoxConnection.addItem(connectionArrayList.get(i));
-        }
 
         Box configButtonBox = new Box(BoxLayout.Y_AXIS);
 
@@ -308,7 +296,6 @@ public class Frame implements Serializable {
                 return s;
             }
         });
-
         connectionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -387,7 +374,6 @@ public class Frame implements Serializable {
                 connectionFrame.setVisible(true);
             }
         });
-
         newItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -398,7 +384,6 @@ public class Frame implements Serializable {
                 gridPanel.repaint();
             }
         });
-
         saveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -417,6 +402,29 @@ public class Frame implements Serializable {
                     fileName += ".ser";
                     saver.save(new File(fileName));
                 }
+            }
+        });
+        openItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser jFileChooser = new JFileChooser();
+                jFileChooser.showOpenDialog(jFrame);
+
+                Opener.open(jFileChooser.getSelectedFile());
+
+                jComboBoxVertex.removeAllItems();
+                jComboBoxConnection.removeAllItems();
+
+                for(int i = 0; i < vertexArrayList.size(); i++){
+                    jComboBoxVertex.addItem(vertexArrayList.get(i).getId());
+                }
+
+                for(int i = 0; i < connectionArrayList.size(); i++){
+                    String connectionName = connectionArrayList.get(i).getStartVertex().getId() + "/" + connectionArrayList.get(i).getEndVertex().getId();
+                    jComboBoxConnection.addItem(connectionName);
+                }
+
+                gridPanel.repaint();
             }
         });
 

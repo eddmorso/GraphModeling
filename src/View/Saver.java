@@ -10,10 +10,12 @@ import java.util.ArrayList;
 public class Saver {
     private ArrayList<Vertex>  vertices;
     private ArrayList<Connection> connections;
+    private int counter;
 
     public Saver(){
         vertices = Frame.vertexArrayList;
         connections = Frame.connectionArrayList;
+        counter = Vertex.counter;
     }
 
     public void save(File file){
@@ -23,6 +25,7 @@ public class Saver {
 
             objectOutputStream.writeObject(vertices);
             objectOutputStream.writeObject(connections);
+            objectOutputStream.writeObject(counter);
 
             objectOutputStream.close();
         }catch (Exception e){

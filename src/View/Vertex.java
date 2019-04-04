@@ -3,7 +3,7 @@ package View;
 import java.io.Serializable;
 
 public class Vertex implements Serializable {
-    private static int counter;
+    public static int counter;
     private int id, weight, x, y;
 
 

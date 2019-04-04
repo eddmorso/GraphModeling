@@ -12,6 +12,7 @@ public class Frame implements Serializable {
     private JFrame jFrame;
     static ArrayList<Vertex> vertexArrayList;
     static ArrayList<Connection> connectionArrayList;
+    private boolean clean = false;
 
     public ArrayList<Vertex> getVertexArrayList() {
         return vertexArrayList;
@@ -34,12 +35,6 @@ public class Frame implements Serializable {
         JMenuBar jMenuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem newItem = new JMenuItem("New");
-        newItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         JMenuItem saveItem = new JMenuItem("Save");
         saveItem.addActionListener(new ActionListener() {
             @Override
@@ -100,13 +95,11 @@ public class Frame implements Serializable {
         JTextField setWeightField = new JTextField();
 
         JComboBox jComboBoxVertex = new JComboBox();
-        jComboBoxVertex.setEditable(true);
         for(int i = 0; i < vertexArrayList.size(); i++){
             jComboBoxVertex.addItem(vertexArrayList.get(i).getId());
         }
 
         JComboBox jComboBoxConnection = new JComboBox();
-        jComboBoxConnection.setEditable(true);
         for(int i = 0; i < connectionArrayList.size(); i++){
             jComboBoxConnection.addItem(connectionArrayList.get(i));
         }
@@ -115,29 +108,10 @@ public class Frame implements Serializable {
 
         JButton vertexButton = new JButton("add vertex");
         vertexButton.setMaximumSize(new Dimension(200,25));
-        vertexButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(!setXField.getText().equals("")){
-                    int x = Integer.valueOf(setXField.getText()) * gridPanel.width;
-                    int y = Integer.valueOf(setYField.getText()) * gridPanel.height;
-                    int weight = Integer.valueOf(setWeightField.getText());
-                    Vertex vertex = new Vertex(weight, x, y);
-                    vertexArrayList.add(vertex);
-                    jComboBoxVertex.addItem(vertex.getId());
-                    gridPanel.repaint();
-                }
-            }
-        });
+
 
         JButton connectionButton = new JButton("add connection");
         connectionButton.setMaximumSize(new Dimension(200,25));
-        connectionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
 
         configButtonBox.add(vertexButton);
         configButtonBox.add(Box.createRigidArea(new Dimension(0,5)));
@@ -266,6 +240,111 @@ public class Frame implements Serializable {
 
         mainPanel.add(BorderLayout.EAST, mainBox);
         jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
+
+        vertexButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!setXField.getText().equals("")){
+                    int x = Integer.valueOf(setXField.getText()) * gridPanel.width;
+                    int y = Integer.valueOf(setYField.getText()) * gridPanel.height;
+                    int weight = Integer.valueOf(setWeightField.getText());
+                    Vertex vertex = new Vertex(weight, x, y);
+                    vertexArrayList.add(vertex);
+                    jComboBoxVertex.addItem(vertex.getId());
+                    gridPanel.repaint();
+                }
+            }
+        });
+
+        newItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                vertexArrayList.clear();
+                connectionArrayList.clear();
+                jComboBoxVertex.removeAllItems();
+                jComboBoxConnection.removeAllItems();
+                gridPanel.repaint();
+            }
+        });
+
+        connectionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame connectionFrame = new JFrame("Set connection");
+                connectionFrame.setSize(400,150);
+                connectionFrame.setLocationRelativeTo(null);
+
+                JPanel jPanel = new JPanel(new BorderLayout());
+
+                JLabel weightLabel = new JLabel("Weight:  ");
+                JTextField weightField = new JTextField();
+
+                JButton okayButton = new JButton("Okay");
+                connectionFrame.getContentPane().add(BorderLayout.SOUTH, okayButton);
+
+                JLabel startVertexLabel = new JLabel("Start Vertex:  ");
+                JComboBox startVertexComboBox = new JComboBox();
+
+                JLabel endVertexLabel = new JLabel("End Vertex: ");
+                JComboBox endVertexComboBox = new JComboBox();
+
+                for(Vertex vertex : vertexArrayList){
+                    startVertexComboBox.addItem(vertex.getId());
+                    endVertexComboBox.addItem(vertex.getId());
+                }
+
+                Box box = new Box(BoxLayout.X_AXIS);
+
+                box.add(startVertexLabel);
+                box.add(startVertexComboBox);
+                box.add(endVertexLabel);
+                box.add(endVertexComboBox);
+
+                Box centerBox = new Box(BoxLayout.Y_AXIS);
+
+                Box mediumBox = new Box(BoxLayout.X_AXIS);
+
+                mediumBox.add(weightLabel);
+                mediumBox.add(weightField);
+
+                centerBox.add(Box.createRigidArea(new Dimension(0,18)));
+                centerBox.add(mediumBox);
+                centerBox.add(Box.createRigidArea(new Dimension(0,18)));
+
+                jPanel.add(BorderLayout.CENTER, centerBox);
+                jPanel.add(BorderLayout.NORTH, box);
+
+                connectionFrame.getContentPane().add(BorderLayout.CENTER, jPanel);
+
+                okayButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if(!weightField.getText().equals("") && !vertexArrayList.isEmpty()){
+
+                            Vertex startVertex = null, endVertex = null;
+
+                            for(Vertex vertex : vertexArrayList){
+                                if((Integer)startVertexComboBox.getSelectedItem() == vertex.getId()){
+                                    startVertex = vertex;
+                                }
+                                if((Integer)endVertexComboBox.getSelectedItem() == vertex.getId()){
+                                    endVertex = vertex;
+                                }
+                            }
+                            int weight = Integer.valueOf(weightField.getText());
+                            Connection connection = new Connection(weight, startVertex, endVertex);
+                            connectionArrayList.add(connection);
+                            String connectionName = connection.getStartVertex().getId() + "/" + connection.getEndVertex().getId();
+                            jComboBoxConnection.addItem(connectionName);
+                            gridPanel.repaint();
+                            connectionFrame.dispose();
+                        }
+                    }
+                });
+
+                connectionFrame.setVisible(true);
+            }
+        });
 
         jFrame.setVisible(true);
     }

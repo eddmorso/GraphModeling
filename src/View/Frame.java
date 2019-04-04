@@ -1,5 +1,7 @@
 package View;
 
+import org.omg.PortableInterceptor.INACTIVE;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -244,14 +246,49 @@ public class Frame implements Serializable {
         vertexButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!setXField.getText().equals("")){
-                    int x = Integer.valueOf(setXField.getText()) * gridPanel.width;
-                    int y = Integer.valueOf(setYField.getText()) * gridPanel.height;
-                    int weight = Integer.valueOf(setWeightField.getText());
-                    Vertex vertex = new Vertex(weight, x, y);
-                    vertexArrayList.add(vertex);
-                    jComboBoxVertex.addItem(vertex.getId());
-                    gridPanel.repaint();
+
+                String textField = setXField.getText();
+                String textField1 = setYField.getText();
+                String numX = "";
+                String numY = "";
+                if(!textField.equals("") && !textField1.equals("")){
+                    char characters [] = textField.toCharArray();
+                    char characters1 [] = textField1.toCharArray();
+                    if(characters.length <= 2 && characters1.length <= 2) {
+                        for(int i = 0; i < characters.length; i++) {
+                            if (characters[i] >= 48 && characters[i] <=57) {
+                                numX += (characters[i]);
+                            }
+                        }
+                        for(int i = 0; i < characters1.length; i++) {
+                            if (characters1[i] >= 48 && characters1[i] <=57) {
+                                numY += (characters1[i]);
+                            }
+                        }
+                    }
+                }
+                if(!numX.equals("") && Integer.valueOf(numX) < 15 && !numY.equals("") && Integer.valueOf(numY) < 15){
+                    boolean able = true;
+                    for(Vertex vertex : vertexArrayList){
+                        if(vertex.getX() == Integer.valueOf(numX) * gridPanel.width &&
+                                vertex.getY() == Integer.valueOf(numY) * gridPanel.height){
+                            able = false;
+                        }
+                    }
+                    if(able) {
+                        int x = Integer.valueOf(setXField.getText()) * gridPanel.width;
+                        int y = Integer.valueOf(setYField.getText()) * gridPanel.height;
+                        int weight = Integer.valueOf(setWeightField.getText());
+                        Vertex vertex = new Vertex(weight, x, y);
+                        vertexArrayList.add(vertex);
+                        jComboBoxVertex.addItem(vertex.getId());
+                        setXField.setText("");
+                        setYField.setText("");
+                        setWeightField.setText("");
+                        gridPanel.repaint();
+                    }else{
+                        System.out.println("something wrong");
+                    }
                 }
             }
         });

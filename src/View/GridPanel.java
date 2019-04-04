@@ -22,26 +22,41 @@ public class GridPanel extends JPanel {
                 g.drawLine(i* width,j* height,i* width,j* height);
             }
         }
+
         ArrayList<Vertex> vertices = Frame.vertexArrayList;
         ArrayList<Connection> connections = Frame.connectionArrayList;
+
+        if(!connections.isEmpty()){
+            for(int i = 0; i < connections.size(); i++){
+                Connection connection = connections.get(i);
+
+                int initialX = connection.getStartVertex().getX() + width/2;
+                int initialY = connection.getStartVertex().getY() + height/2;
+                int endX = connection.getEndVertex().getX() + width/2;
+                int endY = connection.getEndVertex().getY() + height/2;
+
+                if(initialX == endX && initialY == endY){
+                    g.setColor(Color.red);
+                    g.drawOval(initialX - width, initialY - height, width, height);
+                }
+
+                g.setColor(Color.red);
+                g.drawLine(initialX, initialY, endX, endY);
+//not working!!
+                g.setColor(Color.black);
+                g.drawString(String.valueOf(connection.getWeight()), initialX + (initialX - endX)/2, initialY + (initialY - endY)/2);
+            }
+        }
+
         if(!vertices.isEmpty()) {
             for (int i = 0; i < vertices.size(); i++) {
                 Vertex vertex = vertices.get(i);
                 g.setColor(Color.black);
                 g.fillOval(vertex.getX(), vertex.getY(), width, height);
 
-                g.setColor(Color.green);
+                g.setColor(Color.white);
                 g.drawString(String.valueOf(vertex.getWeight()), vertex.getX() + width/2 - 3, vertex.getY() + height/2);
                 g.drawString(String.valueOf(vertex.getId()), vertex.getX() + width/2 - 3, vertex.getY() + height - 5);
-            }
-        }
-        if(!connections.isEmpty()){
-            for(int i = 0; i < connections.size(); i++){
-                Connection connection = connections.get(i);
-                g.setColor(Color.RED);
-                g.drawLine(connection.getStartVertex().getX() + width/2, connection.getStartVertex().getY() + height/2,
-                        connection.getEndVertex().getX() + width/2, connection.getEndVertex().getY() + height/2);
-
             }
         }
     }

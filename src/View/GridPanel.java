@@ -45,7 +45,7 @@ public class GridPanel extends JPanel {
 
                 g.setColor(Color.red);
                 g.drawLine(initialX, initialY, endX, endY);
-//not working correctly!!
+
                 g.setColor(Color.black);
                 if(initialX < endX && initialY < endY){
                     g.drawString(String.valueOf(connection.getWeight()), initialX + (endX - initialX) / 2, initialY + (endY - initialY) / 2);

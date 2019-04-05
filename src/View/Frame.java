@@ -17,15 +17,6 @@ public class Frame implements Serializable {
     private JFrame jFrame;
     static ArrayList<Vertex> vertexArrayList;
     static ArrayList<Connection> connectionArrayList;
-    private boolean clean = false;
-
-    public ArrayList<Vertex> getVertexArrayList() {
-        return vertexArrayList;
-    }
-
-    public ArrayList<Connection> getConnectionArrayList() {
-        return connectionArrayList;
-    }
 
     public void init(){
         vertexArrayList = new ArrayList<Vertex>();
@@ -50,9 +41,7 @@ public class Frame implements Serializable {
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-
         JPanel insidePanel = new JPanel(new BorderLayout());
-
         GridPanel gridPanel = new GridPanel();
 
         insidePanel.add(BorderLayout.CENTER, gridPanel);
@@ -97,7 +86,6 @@ public class Frame implements Serializable {
 
         JButton vertexButton = new JButton("add vertex");
         vertexButton.setMaximumSize(new Dimension(200,25));
-
 
         JButton connectionButton = new JButton("add connection");
         connectionButton.setMaximumSize(new Dimension(200,25));

@@ -12,6 +12,9 @@ public class GridPanel extends JPanel {
         width = (this.getWidth())/14;
         height = (this.getHeight())/14;
 
+        Font font = new Font(Font.SANS_SERIF, Font.BOLD, 14);
+        g.setFont(font);
+
         g.setColor(Color.white);
         g.fillRect(0,0,this.getWidth(), this.getHeight());
 
@@ -42,9 +45,27 @@ public class GridPanel extends JPanel {
 
                 g.setColor(Color.red);
                 g.drawLine(initialX, initialY, endX, endY);
-//not working!!
+//not working correctly!!
                 g.setColor(Color.black);
-                g.drawString(String.valueOf(connection.getWeight()), initialX + (initialX - endX)/2, initialY + (initialY - endY)/2);
+                if(initialX < endX && initialY < endY){
+                    g.drawString(String.valueOf(connection.getWeight()), initialX + (endX - initialX) / 2, initialY + (endY - initialY) / 2);
+                }else if(initialX < endX && initialY > endY){
+                    g.drawString(String.valueOf(connection.getWeight()), initialX + (endX - initialX) / 2, endY + (initialY - endY) / 2);
+                }else if(initialX > endX && initialY < endY){
+                    g.drawString(String.valueOf(connection.getWeight()), endX + (initialX - endX) / 2, initialY + (endY - initialY) / 2);
+                }else if(initialX > endX && initialY > endY) {
+                    g.drawString(String.valueOf(connection.getWeight()), endX + (initialX - endX) / 2, endY + (initialY - endY) / 2);
+                }else if(initialX == endX && initialY > endY){
+                    g.drawString(String.valueOf(connection.getWeight()), initialX, endY + (initialY - endY) / 2);
+                }else if(initialX == endX && initialY < endY){
+                    g.drawString(String.valueOf(connection.getWeight()), initialX, initialY + (endY - initialY) / 2);
+                }else if(initialX > endX && initialY == endY){
+                    g.drawString(String.valueOf(connection.getWeight()), endX + (initialX - endX) / 2, initialY);
+                }else if(initialX < endX && initialY == endY){
+                    g.drawString(String.valueOf(connection.getWeight()), initialX + (endX - initialX) / 2, initialY);
+                }else if(initialX == endX && initialY == endY){
+                    g.drawString(String.valueOf(connection.getWeight()), initialX - width, initialY - height);
+                }
             }
         }
 

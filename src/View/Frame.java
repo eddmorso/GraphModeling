@@ -1,5 +1,6 @@
 package View;
 
+import jdk.nashorn.internal.scripts.JO;
 import org.omg.PortableInterceptor.INACTIVE;
 
 import javax.swing.*;
@@ -334,6 +335,13 @@ public class Frame implements Serializable {
                             }
                             int weight = Integer.valueOf(weightField.getText());
                             Connection connection = new Connection(weight, startVertex, endVertex);
+
+                            for(Connection con : connectionArrayList){
+                                if(con.equals(connection)){
+                                    JOptionPane.showMessageDialog(null, "Connection already exists");
+                                    return;
+                                }
+                            }
                             connectionArrayList.add(connection);
                             String connectionName = connection.getStartVertex().getId() + "/" + connection.getEndVertex().getId();
                             jComboBoxConnection.addItem(connectionName);

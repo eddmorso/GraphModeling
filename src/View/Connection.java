@@ -28,4 +28,14 @@ public class Connection implements Serializable {
         return weight;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Connection){
+            Connection connection = (Connection) obj;
+            if(connection.getStartVertex().equals((startVertex)) && connection.getEndVertex().equals(endVertex)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

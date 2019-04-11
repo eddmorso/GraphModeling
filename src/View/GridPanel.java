@@ -49,20 +49,28 @@ public class GridPanel extends JPanel {
                 g.setColor(Color.black);
                 if(initialX < endX && initialY < endY){
                     g.drawString(String.valueOf(connection.getWeight()), initialX + (endX - initialX) / 2, initialY + (endY - initialY) / 2);
+                    g.fillOval(endX - width/2, endY - height/2, 5,5);
                 }else if(initialX < endX && initialY > endY){
                     g.drawString(String.valueOf(connection.getWeight()), initialX + (endX - initialX) / 2, endY + (initialY - endY) / 2);
+                    g.fillOval(endX - width/2, endY + height/2, 5,5);
                 }else if(initialX > endX && initialY < endY){
                     g.drawString(String.valueOf(connection.getWeight()), endX + (initialX - endX) / 2, initialY + (endY - initialY) / 2);
+                    g.fillOval(endX + width/2, endY - height/2, 5,5);
                 }else if(initialX > endX && initialY > endY) {
                     g.drawString(String.valueOf(connection.getWeight()), endX + (initialX - endX) / 2, endY + (initialY - endY) / 2);
+                    g.fillOval(endX + width/2, endY + height/2, 5,5);
                 }else if(initialX == endX && initialY > endY){
                     g.drawString(String.valueOf(connection.getWeight()), initialX, endY + (initialY - endY) / 2);
+                    g.fillOval(endX, endY + height/2, 5,5);
                 }else if(initialX == endX && initialY < endY){
                     g.drawString(String.valueOf(connection.getWeight()), initialX, initialY + (endY - initialY) / 2);
+                    g.fillOval(endX, endY - (height/2 + 5), 5,5);
                 }else if(initialX > endX && initialY == endY){
                     g.drawString(String.valueOf(connection.getWeight()), endX + (initialX - endX) / 2, initialY);
+                    g.fillOval(endX + width/2, endY, 5,5);
                 }else if(initialX < endX && initialY == endY){
                     g.drawString(String.valueOf(connection.getWeight()), initialX + (endX - initialX) / 2, initialY);
+                    g.fillOval(endX - (width/2 + 5), endY, 5,5);
                 }else if(initialX == endX && initialY == endY){
                     g.drawString(String.valueOf(connection.getWeight()), initialX - width, initialY - height);
                 }

@@ -20,13 +20,16 @@ public class Graph implements Serializable {
     }
 
     public String addConnection(int weight, int startId, int endId){
-        Connection connection = new Connection(weight, getVertex(startId), getVertex(endId));
-        if(!hasConnection(connection)){
-            connectionList.add(connection);
-            return connection.getConnectionName();
-        }else{
-            JOptionPane.showMessageDialog(null, "Connection is already exists");
-            return "";
+        if(hasVertex(startId) && hasVertex(endId)) {
+            Connection connection = new Connection(weight, getVertex(startId), getVertex(endId));
+            if (!hasConnection(connection)) {
+                connectionList.add(connection);
+                return connection.getConnectionName();
+            } else {
+                throw new RuntimeException("Connection already exists");
+            }
+        }else {
+            throw new RuntimeException("Vertex doesn't exist");
         }
     }
 
@@ -47,16 +50,14 @@ public class Graph implements Serializable {
                 numX = Frame.checkCharacters(characters);
                 numY = Frame.checkCharacters(characters1);
                 numW = Frame.checkCharacters(characters2);
-                if(numW.equals("")){
-                    return -1;
+                if(numW.equals("") || numX.equals("") || numY.equals("")){
+                    throw new RuntimeException("Unexpected token");
                 }
             }else{
-                JOptionPane.showMessageDialog(null, "Unexpected axis range");
-                return -1;
+                throw new RuntimeException("Unexpected axis range");
             }
         }else{
-            JOptionPane.showMessageDialog(null, "Empty field");
-            return -1;
+            throw new RuntimeException("Empty field");
         }
         if(!numX.equals("") && Integer.valueOf(numX) < 14 && !numY.equals("") && Integer.valueOf(numY) < 14){
             if(!hasVertex(numX, numY)) {
@@ -66,12 +67,10 @@ public class Graph implements Serializable {
                 vertex = new Vertex(weightInt, xInt, yInt);
                 vertexList.add(vertex);
             }else{
-                JOptionPane.showMessageDialog(null, "This Spot is already taken");
-                return -1;
+                throw new RuntimeException("This Spot is already taken");
             }
         }else{
-            JOptionPane.showMessageDialog(null, "Unexpected axis range");
-            return -1;
+            throw new RuntimeException("Unexpected axis range");
         }
         return vertex.getId();
     }
@@ -141,42 +140,31 @@ public class Graph implements Serializable {
 //        }
 //    }
 
-    public void saveGraph(File file){
+    public void saveGraph(File file) throws Exception{
         int counter = Vertex.getCounter();
-        try{
-            FileOutputStream outputStream = new FileOutputStream(file);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        FileOutputStream outputStream = new FileOutputStream(file);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
-            objectOutputStream.writeObject(vertexList);
-            objectOutputStream.writeObject(connectionList);
-            objectOutputStream.writeObject(graph);
-            objectOutputStream.writeObject(counter);
+        objectOutputStream.writeObject(vertexList);
+        objectOutputStream.writeObject(connectionList);
+        objectOutputStream.writeObject(graph);
+        objectOutputStream.writeObject(counter);
 
-            objectOutputStream.close();
-        }catch (Exception e){
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Something went wrong");
-        }
+        objectOutputStream.close();
     }
 
-    public void openGraph(File file){
+    public void openGraph(File file) throws Exception{
         ArrayList<Vertex> vertices = null;
         ArrayList<Connection> connections = null;
         HashMap<Vertex, List<Vertex>> graph = null;
         int counter = 0;
-        try{
-            FileInputStream fileInputStream = new FileInputStream(file);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        FileInputStream fileInputStream = new FileInputStream(file);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
-            vertices = (ArrayList<Vertex>) objectInputStream.readObject();
-            connections = (ArrayList<Connection>) objectInputStream.readObject();
-            graph = (HashMap<Vertex, List<Vertex>>) objectInputStream.readObject();
-            counter = (int) objectInputStream.readObject();
-
-        }catch (Exception e){
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Something went wrong");
-        }
+        vertices = (ArrayList<Vertex>) objectInputStream.readObject();
+        connections = (ArrayList<Connection>) objectInputStream.readObject();
+        graph = (HashMap<Vertex, List<Vertex>>) objectInputStream.readObject();
+        counter = (int) objectInputStream.readObject();
 
         vertexList = vertices;
         connectionList = connections;

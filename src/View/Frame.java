@@ -1,5 +1,7 @@
 package View;
 
+import jdk.nashorn.internal.scripts.JO;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -197,15 +199,17 @@ public class Frame implements Serializable {
         vertexButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int id = graph.addVertex(setXField.getText(), setYField.getText(), setWeightField.getText());
-                if(id >= 0) {
+                try {
+                    int id = graph.addVertex(setXField.getText(), setYField.getText(), setWeightField.getText());
                     jComboBoxVertex.addItem(id);
                     setXField.setText("");
                     setYField.setText("");
                     setWeightField.setText("");
                     gridPanel.repaint();
+                }catch (Exception ex){
+                    JOptionPane.showMessageDialog(null, ex.toString());
+                    ex.printStackTrace();
                 }
-
             }});
         connectionButton.addActionListener(new ActionListener() {
             @Override
@@ -235,7 +239,6 @@ public class Frame implements Serializable {
                     }
                 }else{
                     JOptionPane.showMessageDialog(null, "Add some vertexes");
-                    //connectionFrame.dispose();
                     return;
                 }
 
@@ -266,13 +269,15 @@ public class Frame implements Serializable {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if(!weightField.getText().equals("")){
-
+                            try{
                             String connectionName =
                                     graph.addConnection(Integer.valueOf(weightField.getText()), (int) startVertexComboBox.getSelectedItem(), (int) endVertexComboBox.getSelectedItem());
-                            if(!connectionName.equals("")) {
                                 jComboBoxConnection.addItem(connectionName);
                                 gridPanel.repaint();
                                 connectionFrame.dispose();
+                            }catch (Exception ex){
+                                JOptionPane.showMessageDialog(null, ex.toString());
+                                ex.printStackTrace();
                             }
                         }
                     }
@@ -308,10 +313,20 @@ public class Frame implements Serializable {
                 String fileName = file.getAbsolutePath();
 
                 if(fileName.endsWith(".ser")){
-                    graph.saveGraph(file);
+                    try {
+                        graph.saveGraph(file);
+                    }catch (Exception ex){
+                        JOptionPane.showMessageDialog(null, "Something went wrong");
+                        ex.printStackTrace();
+                    }
                 }else {
                     fileName += ".ser";
-                    graph.saveGraph(new File(fileName));
+                    try {
+                        graph.saveGraph(new File(fileName));
+                    }catch (Exception ex){
+                        JOptionPane.showMessageDialog(null, "Something went wrong");
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -321,7 +336,13 @@ public class Frame implements Serializable {
                 JFileChooser jFileChooser = new JFileChooser();
                 jFileChooser.showOpenDialog(jFrame);
 
-                graph.openGraph(jFileChooser.getSelectedFile());
+                try {
+                    graph.openGraph(jFileChooser.getSelectedFile());
+                }catch (Exception ex){
+                    JOptionPane.showMessageDialog(null, "Something went wrong");
+                    ex.printStackTrace();
+                    return;
+                }
 
                 jComboBoxVertex.removeAllItems();
                 jComboBoxConnection.removeAllItems();
@@ -436,7 +457,6 @@ public class Frame implements Serializable {
             if (arr[i] >= 48 && arr[i] <=57) {
                 s += (arr[i]);
             }else{
-                JOptionPane.showMessageDialog(null, "Unexpected token");
                 return s;
             }
         }

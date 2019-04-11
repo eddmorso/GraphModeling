@@ -20,20 +20,6 @@ public class Graph implements Serializable {
         graph = new HashMap<>();
     }
 
-    public String addConnection(int weight, int startId, int endId){
-        if(hasVertex(startId) && hasVertex(endId)) {
-            Connection connection = new Connection(weight, getVertex(startId), getVertex(endId));
-            if (!hasConnection(connection)) {
-                connectionList.add(connection);
-                return connection.getConnectionName();
-            } else {
-                throw new RuntimeException("Connection already exists");
-            }
-        }else {
-            throw new RuntimeException("Vertex doesn't exist");
-        }
-    }
-
     public int addVertex(String x, String y, String weight){
         Vertex vertex;
 
@@ -74,6 +60,21 @@ public class Graph implements Serializable {
             throw new RuntimeException("Unexpected axis range");
         }
         return vertex.getId();
+    }
+
+    public String addConnection(int weight, int startId, int endId){
+        if(hasVertex(startId) && hasVertex(endId)) {
+            Connection connection = new Connection(weight, getVertex(startId), getVertex(endId));
+            if (!hasConnection(connection)) {
+                connectionList.add(connection);
+                addToGraph(vertexList.get(startId), vertexList.get(endId));
+                return connection.getConnectionName();
+            } else {
+                throw new RuntimeException("Connection already exists");
+            }
+        }else {
+            throw new RuntimeException("Vertex doesn't exist");
+        }
     }
 
     public boolean hasVertex(String x, String y){
@@ -127,6 +128,19 @@ public class Graph implements Serializable {
         return null;
     }
 
+    public void addToGraph(Vertex startVertex, Vertex endVertex){
+        if(graph.keySet().contains(startVertex)){
+            List<Vertex> connectingVertex = graph.get(startVertex);
+            if(!connectingVertex.contains(endVertex)){
+                connectingVertex.add(endVertex);
+            }
+        }else{
+            List<Vertex> connectingVertex = new ArrayList<>();
+            connectingVertex.add(endVertex);
+            graph.put(startVertex, connectingVertex);
+        }
+    }
+
 //    public void removeVertex(int id){
 //        if(hasVertex(id)){
 //            Vertex vertex = getVertex(id);
@@ -155,17 +169,14 @@ public class Graph implements Serializable {
     }
 
     public void openGraph(File file) throws Exception{
-        ArrayList<Vertex> vertices = null;
-        ArrayList<Connection> connections = null;
-        HashMap<Vertex, List<Vertex>> graph = null;
-        int counter = 0;
+
         FileInputStream fileInputStream = new FileInputStream(file);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
-        vertices = (ArrayList<Vertex>) objectInputStream.readObject();
-        connections = (ArrayList<Connection>) objectInputStream.readObject();
-        graph = (HashMap<Vertex, List<Vertex>>) objectInputStream.readObject();
-        counter = (int) objectInputStream.readObject();
+        ArrayList<Vertex> vertices = (ArrayList<Vertex>) objectInputStream.readObject();
+        ArrayList<Connection> connections = (ArrayList<Connection>) objectInputStream.readObject();
+        HashMap<Vertex, List<Vertex>> graph = (HashMap<Vertex, List<Vertex>>) objectInputStream.readObject();
+        int counter = (int) objectInputStream.readObject();
 
         vertexList = vertices;
         connectionList = connections;

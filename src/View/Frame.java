@@ -1,6 +1,8 @@
 package View;
 
-import jdk.nashorn.internal.scripts.JO;
+import Builder.Connection;
+import Builder.Graph;
+import Builder.Vertex;
 
 import javax.swing.*;
 import java.awt.*;

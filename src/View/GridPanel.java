@@ -1,5 +1,8 @@
 package View;
 
+import Builder.Connection;
+import Builder.Vertex;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;

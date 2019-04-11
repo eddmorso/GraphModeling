@@ -2,7 +2,7 @@ package View;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public class GridPanel extends JPanel {
     public int width, height;
@@ -26,17 +26,17 @@ public class GridPanel extends JPanel {
             }
         }
 
-        ArrayList<Vertex> vertices = Frame.vertexArrayList;
-        ArrayList<Connection> connections = Frame.connectionArrayList;
+        List<Vertex> vertices = Frame.graph.getVertexList();
+        List<Connection> connections = Frame.graph.getConnectionList();
 
         if(!connections.isEmpty()){
             for(int i = 0; i < connections.size(); i++){
                 Connection connection = connections.get(i);
 
-                int initialX = connection.getStartVertex().getX() + width/2;
-                int initialY = connection.getStartVertex().getY() + height/2;
-                int endX = connection.getEndVertex().getX() + width/2;
-                int endY = connection.getEndVertex().getY() + height/2;
+                int initialX = connection.getStartVertex().getX() * width + width/2;
+                int initialY = connection.getStartVertex().getY() * height + height/2;
+                int endX = connection.getEndVertex().getX() * width + width/2;
+                int endY = connection.getEndVertex().getY() * height + height/2;
 
                 if(initialX == endX && initialY == endY){
                     g.setColor(Color.red);
@@ -81,11 +81,11 @@ public class GridPanel extends JPanel {
             for (int i = 0; i < vertices.size(); i++) {
                 Vertex vertex = vertices.get(i);
                 g.setColor(Color.black);
-                g.fillOval(vertex.getX(), vertex.getY(), width, height);
+                g.fillOval(vertex.getX() * width, vertex.getY() * height, width, height);
 
                 g.setColor(Color.white);
-                g.drawString(String.valueOf(vertex.getWeight()), vertex.getX() + width/2 - 3, vertex.getY() + height/2);
-                g.drawString(String.valueOf(vertex.getId()), vertex.getX() + width/2 - 3, vertex.getY() + height - 5);
+                g.drawString(String.valueOf(vertex.getWeight()), vertex.getX() * width + width/2 - 3, vertex.getY() * height + height/2);
+                g.drawString(String.valueOf(vertex.getId()), vertex.getX() * width + width/2 - 3, vertex.getY() * height + height - 5);
             }
         }
     }

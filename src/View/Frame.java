@@ -1,27 +1,20 @@
 package View;
 
-import jdk.nashorn.internal.scripts.JO;
-import org.omg.PortableInterceptor.INACTIVE;
-
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Frame implements Serializable {
 
     private JFrame jFrame;
-    static ArrayList<Vertex> vertexArrayList;
-    static ArrayList<Connection> connectionArrayList;
+    static Graph graph;
 
     public void init(){
-        vertexArrayList = new ArrayList<Vertex>();
-        connectionArrayList = new ArrayList<Connection>();
+        graph = new Graph();
 
         jFrame = new JFrame("Graph modeling");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -204,71 +197,16 @@ public class Frame implements Serializable {
         vertexButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int id = graph.addVertex(setXField.getText(), setYField.getText(), setWeightField.getText());
+                if(id >= 0) {
+                    jComboBoxVertex.addItem(id);
+                    setXField.setText("");
+                    setYField.setText("");
+                    setWeightField.setText("");
+                    gridPanel.repaint();
+                }
 
-                String textField = setXField.getText();
-                String textField1 = setYField.getText();
-                String textField2 = setWeightField.getText();
-                String numX = "";
-                String numY = "";
-                String numW = "";
-                if(!textField.equals("") && !textField1.equals("") && !textField2.equals("")){
-                    char characters [] = textField.toCharArray();
-                    char characters1 [] = textField1.toCharArray();
-                    char characters2 [] = textField2.toCharArray();
-                    if(characters.length <= 2 && characters1.length <= 2) {
-                        numX = checkCharacters(characters);
-                        numY = checkCharacters(characters1);
-                        numW = checkCharacters(characters2);
-                        if(numW.equals("")){
-                            return;
-                        }
-                    }else{
-                        JOptionPane.showMessageDialog(null, "Unexpected axis range");
-                        return;
-                    }
-                }else{
-                    JOptionPane.showMessageDialog(null, "Empty field");
-                    return;
-                }
-                if(!numX.equals("") && Integer.valueOf(numX) < 14 && !numY.equals("") && Integer.valueOf(numY) < 14){
-                    boolean able = true;
-                    for(Vertex vertex : vertexArrayList){
-                        if(vertex.getX() == Integer.valueOf(numX) * gridPanel.width &&
-                                vertex.getY() == Integer.valueOf(numY) * gridPanel.height){
-                            able = false;
-                        }
-                    }
-                    if(able) {
-                        int x = Integer.valueOf(setXField.getText()) * gridPanel.width;
-                        int y = Integer.valueOf(setYField.getText()) * gridPanel.height;
-                        int weight = Integer.valueOf(setWeightField.getText());
-                        Vertex vertex = new Vertex(weight, x, y);
-                        vertexArrayList.add(vertex);
-                        jComboBoxVertex.addItem(vertex.getId());
-                        setXField.setText("");
-                        setYField.setText("");
-                        setWeightField.setText("");
-                        gridPanel.repaint();
-                    }else{
-                        JOptionPane.showMessageDialog(null, "This Spot is already taken");
-                    }
-                }else{
-                    JOptionPane.showMessageDialog(null, "Unexpected axis range");
-                }
-            }
-            public String checkCharacters(char [] arr){
-                String s = "";
-                for(int i = 0; i < arr.length; i++) {
-                    if (arr[i] >= 48 && arr[i] <=57) {
-                        s += (arr[i]);
-                    }else{
-                        JOptionPane.showMessageDialog(null, "Unexpected token");
-                        return s;
-                    }
-                }
-                return s;
-            }
-        });
+            }});
         connectionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -290,9 +228,15 @@ public class Frame implements Serializable {
                 JLabel endVertexLabel = new JLabel("End Vertex: ");
                 JComboBox endVertexComboBox = new JComboBox();
 
-                for(Vertex vertex : vertexArrayList){
-                    startVertexComboBox.addItem(vertex.getId());
-                    endVertexComboBox.addItem(vertex.getId());
+                if(!graph.getVertexList().isEmpty()) {
+                    for (Vertex vertex : graph.getVertexList()) {
+                        startVertexComboBox.addItem(vertex.getId());
+                        endVertexComboBox.addItem(vertex.getId());
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Add some vertexes");
+                    //connectionFrame.dispose();
+                    return;
                 }
 
                 Box box = new Box(BoxLayout.X_AXIS);
@@ -321,32 +265,15 @@ public class Frame implements Serializable {
                 okayButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if(!weightField.getText().equals("") && !vertexArrayList.isEmpty()){
+                        if(!weightField.getText().equals("")){
 
-                            Vertex startVertex = null, endVertex = null;
-
-                            for(Vertex vertex : vertexArrayList){
-                                if((Integer)startVertexComboBox.getSelectedItem() == vertex.getId()){
-                                    startVertex = vertex;
-                                }
-                                if((Integer)endVertexComboBox.getSelectedItem() == vertex.getId()){
-                                    endVertex = vertex;
-                                }
+                            String connectionName =
+                                    graph.addConnection(Integer.valueOf(weightField.getText()), (int) startVertexComboBox.getSelectedItem(), (int) endVertexComboBox.getSelectedItem());
+                            if(!connectionName.equals("")) {
+                                jComboBoxConnection.addItem(connectionName);
+                                gridPanel.repaint();
+                                connectionFrame.dispose();
                             }
-                            int weight = Integer.valueOf(weightField.getText());
-                            Connection connection = new Connection(weight, startVertex, endVertex);
-
-                            for(Connection con : connectionArrayList){
-                                if(con.equals(connection)){
-                                    JOptionPane.showMessageDialog(null, "Connection already exists");
-                                    return;
-                                }
-                            }
-                            connectionArrayList.add(connection);
-                            String connectionName = connection.getStartVertex().getId() + "/" + connection.getEndVertex().getId();
-                            jComboBoxConnection.addItem(connectionName);
-                            gridPanel.repaint();
-                            connectionFrame.dispose();
                         }
                     }
                 });
@@ -357,13 +284,12 @@ public class Frame implements Serializable {
         newItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                vertexArrayList.clear();
-                connectionArrayList.clear();
+                graph.clearAll();
 
                 jComboBoxVertex.removeAllItems();
                 jComboBoxConnection.removeAllItems();
 
-                Vertex.counter = 0;
+                Vertex.setCounterToZero();
 
                 jComboBoxVertex.addItem("none");
                 jComboBoxConnection.addItem("none");
@@ -378,16 +304,14 @@ public class Frame implements Serializable {
                 JFileChooser jFileChooser = new JFileChooser();
                 jFileChooser.showSaveDialog(jFrame);
 
-                Saver saver = new Saver();
-
                 File file = jFileChooser.getSelectedFile();
                 String fileName = file.getAbsolutePath();
 
                 if(fileName.endsWith(".ser")){
-                    saver.save(file);
+                    graph.saveGraph(file);
                 }else {
                     fileName += ".ser";
-                    saver.save(new File(fileName));
+                    graph.saveGraph(new File(fileName));
                 }
             }
         });
@@ -397,7 +321,7 @@ public class Frame implements Serializable {
                 JFileChooser jFileChooser = new JFileChooser();
                 jFileChooser.showOpenDialog(jFrame);
 
-                Opener.open(jFileChooser.getSelectedFile());
+                graph.openGraph(jFileChooser.getSelectedFile());
 
                 jComboBoxVertex.removeAllItems();
                 jComboBoxConnection.removeAllItems();
@@ -405,13 +329,12 @@ public class Frame implements Serializable {
                 jComboBoxVertex.addItem("none");
                 jComboBoxConnection.addItem("none");
 
-                for(int i = 0; i < vertexArrayList.size(); i++){
-                    jComboBoxVertex.addItem(vertexArrayList.get(i).getId());
+                for(Vertex v : graph.getVertexList()){
+                    jComboBoxVertex.addItem(v.getId());
                 }
 
-                for(int i = 0; i < connectionArrayList.size(); i++){
-                    String connectionName = connectionArrayList.get(i).getStartVertex().getId() + "/" + connectionArrayList.get(i).getEndVertex().getId();
-                    jComboBoxConnection.addItem(connectionName);
+                for(Connection c : graph.getConnectionList()){
+                    jComboBoxConnection.addItem(c.getConnectionName());
                 }
 
                 gridPanel.repaint();
@@ -421,58 +344,34 @@ public class Frame implements Serializable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(!editVertexWeightField.getText().equals("") && !jComboBoxVertex.getSelectedItem().equals("none")){
-                    String s = "";
-                    char arr [] = editVertexWeightField.getText().toCharArray();
-                    for(int i = 0; i < arr.length; i++){
-                        if(arr[i] >= 48 && arr[i] <= 57){
-                            s += arr[i];
-                        }
-                    }
+                    String s = checkCharacters(editVertexWeightField.getText().toCharArray());
+
                     if(!s.equals("")){
                         int weight = Integer.valueOf(s);
                         int id = (int) jComboBoxVertex.getSelectedItem();
 
-                        for(Vertex vertex : vertexArrayList){
-                            if(vertex.getId() == id){
-                                vertex.setWeight(weight);
-                                editVertexWeightField.setText("");
-                                gridPanel.repaint();
-                                break;
-                            }
-                        }
-                    }else{
+                        Vertex vertex = graph.getVertex(id);
+                        vertex.setWeight(weight);
+                        editVertexWeightField.setText("");
+                        gridPanel.repaint();
+                    }else
                         JOptionPane.showMessageDialog(null, "Unexpected token");
-                    }
-                }else{
+                }else
                     JOptionPane.showMessageDialog(null, "Pick the weight and vertex");
-                }
             }
         });
         editConnectionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(!jComboBoxConnection.getSelectedItem().equals("none") && !editConnectionWeightField.getText().equals("")){
-                    String s = "";
-                    char arr [] = editConnectionWeightField.getText().toCharArray();
-                    for(int i = 0; i < arr.length; i++){
-                        if(arr[i] >= 48 && arr[i] <= 57){
-                            s += arr[i];
-                        }
-                    }
+                    String s = checkCharacters(editConnectionWeightField.getText().toCharArray());
                     if(!s.equals("")){
                         int weight = Integer.valueOf(s);
-                        String [] sides = jComboBoxConnection.getSelectedItem().toString().split("/");
+                        Connection connection = graph.getConnection(jComboBoxConnection.getSelectedItem().toString());
 
-                        for(Connection connection : connectionArrayList){
-                            if(connection.getStartVertex().getId() == Integer.valueOf(sides[0]) &&
-                                    connection.getEndVertex().getId() == Integer.valueOf(sides[1])){
-
-                                connection.setWeight(weight);
-                                editConnectionWeightField.setText("");
-                                gridPanel.repaint();
-                                break;
-                            }
-                        }
+                        connection.setWeight(weight);
+                        editConnectionWeightField.setText("");
+                        gridPanel.repaint();
                     }else{
                         JOptionPane.showMessageDialog(null, "Unexpected token");
                     }
@@ -484,18 +383,16 @@ public class Frame implements Serializable {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                int vertexId = -1;
                 String connectionName = "";
-
+                int vertexId;
                 if(!jComboBoxVertex.getSelectedItem().equals("none")){
 
                     vertexId = (int) jComboBoxVertex.getSelectedItem();
 
-                    for(Vertex vertex : vertexArrayList){
+                    for(Vertex vertex : graph.getVertexList()){
                         if(vertex.getId() == vertexId){
                             ArrayList<Connection> removeList = new ArrayList<>();
-                            for(Connection connection : connectionArrayList){
+                            for(Connection connection : graph.getConnectionList()){
                                 if(connection.getStartVertex().equals(vertex) || connection.getEndVertex().equals(vertex)){
                                     String conName = connection.getStartVertex().getId() + "/" + connection.getEndVertex().getId();
                                     removeList.add(connection);
@@ -503,8 +400,8 @@ public class Frame implements Serializable {
                                 }
                             }
                             jComboBoxVertex.removeItem(vertexId);
-                            vertexArrayList.remove(vertex);
-                            connectionArrayList.removeAll(removeList);
+                            graph.getVertexList().remove(vertex);
+                            graph.getConnectionList().removeAll(removeList);
                             break;
                         }
                     }
@@ -518,10 +415,10 @@ public class Frame implements Serializable {
                     int startVertexId = Integer.valueOf(sides[0]);
                     int endVertexId = Integer.valueOf(sides[1]);
 
-                    for(Connection connection : connectionArrayList){
+                    for(Connection connection : graph.getConnectionList()){
                         if(connection.getStartVertex().getId() == startVertexId && connection.getEndVertex().getId() == endVertexId){
                             jComboBoxConnection.removeItem(connectionName);
-                            connectionArrayList.remove(connection);
+                            graph.getConnectionList().remove(connection);
                             break;
                         }
                     }
@@ -531,5 +428,18 @@ public class Frame implements Serializable {
         });
 
         jFrame.setVisible(true);
+    }
+
+    public static String checkCharacters(char [] arr){
+        String s = "";
+        for(int i = 0; i < arr.length; i++) {
+            if (arr[i] >= 48 && arr[i] <=57) {
+                s += (arr[i]);
+            }else{
+                JOptionPane.showMessageDialog(null, "Unexpected token");
+                return s;
+            }
+        }
+        return s;
     }
 }

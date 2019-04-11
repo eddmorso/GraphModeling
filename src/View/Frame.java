@@ -2,6 +2,7 @@ package View;
 
 import Builder.Connection;
 import Builder.Graph;
+import Builder.UIException;
 import Builder.Vertex;
 
 import javax.swing.*;
@@ -208,7 +209,7 @@ public class Frame implements Serializable {
                     setYField.setText("");
                     setWeightField.setText("");
                     gridPanel.repaint();
-                }catch (Exception ex){
+                }catch (UIException ex){
                     JOptionPane.showMessageDialog(null, ex.toString());
                     ex.printStackTrace();
                 }
@@ -277,7 +278,7 @@ public class Frame implements Serializable {
                                 jComboBoxConnection.addItem(connectionName);
                                 gridPanel.repaint();
                                 connectionFrame.dispose();
-                            }catch (Exception ex){
+                            }catch (UIException ex){
                                 JOptionPane.showMessageDialog(null, ex.toString());
                                 ex.printStackTrace();
                             }

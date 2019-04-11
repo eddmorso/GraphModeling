@@ -38,15 +38,15 @@ public class Graph implements Serializable {
                 numY = Frame.checkCharacters(characters1);
                 numW = Frame.checkCharacters(characters2);
                 if(numW.equals("") || numX.equals("") || numY.equals("")){
-                    throw new RuntimeException("Unexpected token");
+                    throw new UIException("Unexpected token");
                 }
             }else{
-                throw new RuntimeException("Unexpected axis range");
+                throw new UIException("Unexpected axis range");
             }
         }else{
-            throw new RuntimeException("Empty field");
+            throw new UIException("Empty field");
         }
-        if(!numX.equals("") && Integer.valueOf(numX) < 14 && !numY.equals("") && Integer.valueOf(numY) < 14){
+        if(Integer.valueOf(numX) < 14 && Integer.valueOf(numY) < 14){
             if(!hasVertex(numX, numY)) {
                 int xInt = Integer.valueOf(x);
                 int yInt = Integer.valueOf(y);
@@ -54,10 +54,10 @@ public class Graph implements Serializable {
                 vertex = new Vertex(weightInt, xInt, yInt);
                 vertexList.add(vertex);
             }else{
-                throw new RuntimeException("This Spot is already taken");
+                throw new UIException("This Spot is already taken");
             }
         }else{
-            throw new RuntimeException("Unexpected axis range");
+            throw new UIException("Unexpected axis range");
         }
         return vertex.getId();
     }
@@ -70,10 +70,10 @@ public class Graph implements Serializable {
                 addToGraph(vertexList.get(startId), vertexList.get(endId));
                 return connection.getConnectionName();
             } else {
-                throw new RuntimeException("Connection already exists");
+                throw new UIException("Connection already exists");
             }
         }else {
-            throw new RuntimeException("Vertex doesn't exist");
+            throw new UIException("Vertex doesn't exist");
         }
     }
 

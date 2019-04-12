@@ -45,4 +45,9 @@ public class Vertex implements Serializable {
     public static int getCounter() {
         return counter;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(id);
+    }
 }

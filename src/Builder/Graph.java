@@ -3,10 +3,7 @@ package Builder;
 import View.Frame;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Graph implements Serializable {
 
@@ -14,68 +11,73 @@ public class Graph implements Serializable {
     private List<Connection> connectionList;
     private Map<Vertex, List<Vertex>> graph;
 
-    public Graph(){
+    public Graph() {
         vertexList = new ArrayList<>();
         connectionList = new ArrayList<>();
         graph = new HashMap<>();
     }
 
-    public int addVertex(String x, String y, String weight){
+    public int addVertex(String x, String y, String weight) {
         Vertex vertex;
 
         String numX;
         String numY;
         String numW;
 
-        if(!x.equals("") && !y.equals("") && !weight.equals("")){
+        if (!x.equals("") && !y.equals("") && !weight.equals("")) {
 
-            char characters [] = x.toCharArray();
-            char characters1 [] = y.toCharArray();
-            char characters2 [] = weight.toCharArray();
+            char characters[] = x.toCharArray();
+            char characters1[] = y.toCharArray();
+            char characters2[] = weight.toCharArray();
 
-            if(characters.length <= 2 && characters1.length <= 2) {
+            if (characters.length <= 2 && characters1.length <= 2) {
                 numX = Frame.checkCharacters(characters);
                 numY = Frame.checkCharacters(characters1);
                 numW = Frame.checkCharacters(characters2);
-                if(numW.equals("") || numX.equals("") || numY.equals("")){
+                if (numW.equals("") || numX.equals("") || numY.equals("")) {
                     throw new UIException("Unexpected token");
                 }
-            }else{
+            } else {
                 throw new UIException("Unexpected axis range");
             }
-        }else{
+        } else {
             throw new UIException("Empty field");
         }
-        if(Integer.valueOf(numX) < 14 && Integer.valueOf(numY) < 14){
-            if(!hasVertex(numX, numY)) {
+        if (Integer.valueOf(numX) < 14 && Integer.valueOf(numY) < 14) {
+            if (!hasVertex(numX, numY)) {
                 int xInt = Integer.valueOf(x);
                 int yInt = Integer.valueOf(y);
                 int weightInt = Integer.valueOf(weight);
                 vertex = new Vertex(weightInt, xInt, yInt);
                 vertexList.add(vertex);
-            }else{
+            } else {
                 throw new UIException("This Spot is already taken");
             }
-        }else{
+        } else {
             throw new UIException("Unexpected axis range");
         }
         return vertex.getId();
     }
 
-    public String addConnection(int weight, int startId, int endId){
-        if(hasVertex(startId) && hasVertex(endId)) {
+    public String addConnection(int weight, int startId, int endId) {
+        if (hasVertex(startId) && hasVertex(endId)) {
             Connection connection = new Connection(weight, getVertex(startId), getVertex(endId));
             if (!hasConnection(connection)) {
-                connectionList.add(connection);
-                addToGraph(vertexList.get(startId), vertexList.get(endId));
-                return connection.getConnectionName();
+                if (!hasLooping(getVertex(startId), getVertex(endId))) {
+                    connectionList.add(connection);
+                    addToGraph(vertexList.get(startId), vertexList.get(endId));
+                    return connection.getConnectionName();
+                }else{
+                    throw new UIException("Looping connection");
+                }
             } else {
                 throw new UIException("Connection already exists");
             }
-        }else {
+        } else {
             throw new UIException("Vertex doesn't exist");
         }
     }
+
 
     public boolean hasVertex(String x, String y){
         for(Vertex v : vertexList){
@@ -128,6 +130,15 @@ public class Graph implements Serializable {
         return null;
     }
 
+    public Connection getConnection(Vertex startVertex, Vertex endVertex){
+        for(Connection c : connectionList){
+            if(c.getStartVertex().equals(startVertex) && c.getEndVertex().equals(endVertex)){
+                return c;
+            }
+        }
+        return null;
+    }
+
     public void addToGraph(Vertex startVertex, Vertex endVertex){
         if(graph.keySet().contains(startVertex)){
             List<Vertex> connectingVertex = graph.get(startVertex);
@@ -139,6 +150,74 @@ public class Graph implements Serializable {
             connectingVertex.add(endVertex);
             graph.put(startVertex, connectingVertex);
         }
+    }
+
+    public boolean hasLooping(Vertex startVertex, Vertex endVertex){
+
+        List route = new LinkedList();
+        List reachableStations = new LinkedList();
+        Map previousStations = new HashMap();
+
+        List neighbors = (List) graph.get(endVertex);
+        if(neighbors != null) {
+            for (Iterator iterator = neighbors.iterator(); iterator.hasNext(); ) {
+                Vertex vertex = (Vertex) iterator.next();
+                if (vertex.equals(startVertex)) {
+                    return true;
+                } else {
+                    reachableStations.add(vertex);
+                    previousStations.put(vertex, endVertex);
+                }
+            }
+        }else{
+            return false;
+        }
+        List nextStations = new LinkedList();
+        nextStations.addAll(neighbors);
+        Vertex currentVertex = endVertex;
+
+        searchLoop:
+        for(int i = 1; i < vertexList.size(); i++){
+            List tmpNextStations = new LinkedList();
+
+            for(Iterator j = nextStations.iterator(); j.hasNext(); ){
+                Vertex vertex = (Vertex) j.next();
+                reachableStations.add(vertex);
+                currentVertex = vertex;
+                List currentNeighbors = (List)graph.get(currentVertex);
+
+                for(Iterator k = currentNeighbors.iterator(); k.hasNext(); ){
+                    Vertex neighbor = (Vertex) k.next();
+
+                    if(neighbor.equals(startVertex)){
+                        reachableStations.add(neighbor);
+                        previousStations.put(neighbor, currentVertex);
+                        break searchLoop;
+                    }else if(!reachableStations.contains(neighbor)){
+                        reachableStations.add(neighbor);
+                        tmpNextStations.add(neighbor);
+                        previousStations.put(neighbor, currentVertex);
+                    }
+                }
+            }
+            nextStations = tmpNextStations;
+        }
+
+        boolean keepLooping = true;
+        Vertex keyVertex = startVertex;
+        Vertex vertex;
+
+        while(keepLooping){
+            vertex = (Vertex) previousStations.get(keyVertex);
+            route.add(0, getConnection(vertex, keyVertex));
+            if(endVertex.equals(vertex)){
+                keepLooping = false;
+            }
+            keyVertex = vertex;
+        }
+
+        System.out.println(route);
+        return true;
     }
 
 //    public void removeVertex(int id){
@@ -182,6 +261,8 @@ public class Graph implements Serializable {
         connectionList = connections;
         this.graph = graph;
         Vertex.setCounter(counter);
+
+        System.out.println(graph);
     }
 
     public List<Vertex> getVertexList() {

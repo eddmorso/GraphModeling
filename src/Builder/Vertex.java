@@ -2,7 +2,7 @@ package Builder;
 
 import java.io.Serializable;
 
-public class Vertex implements Serializable {
+public class Vertex implements Serializable, Comparable<Vertex> {
     private static int counter;
     private int id, weight, x, y;
 
@@ -49,5 +49,15 @@ public class Vertex implements Serializable {
     @Override
     public String toString() {
         return String.valueOf(id);
+    }
+
+    @Override
+    public int compareTo(Vertex o) {
+        if(weight == o.weight){
+            return 0;
+        }else if(weight > o.weight){
+            return -1;
+        }else
+            return 1;
     }
 }

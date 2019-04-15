@@ -29,13 +29,17 @@ public class Frame implements Serializable {
 
         JMenuBar jMenuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
+        JMenu sortMenu = new JMenu("Sort");
         JMenuItem newItem = new JMenuItem("New");
         JMenuItem saveItem = new JMenuItem("Save");
         JMenuItem openItem = new JMenuItem("Open");
         fileMenu.add(newItem);
         fileMenu.add(saveItem);
         fileMenu.add(openItem);
+        JMenuItem sortVertexWeightItem = new JMenuItem("Sort Vertex Weight");
+        sortMenu.add(sortVertexWeightItem);
         jMenuBar.add(fileMenu);
+        jMenuBar.add(sortMenu);
         jFrame.setJMenuBar(jMenuBar);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -361,6 +365,13 @@ public class Frame implements Serializable {
                     jComboBoxConnection.addItem(c.getConnectionName());
                 }
 
+                gridPanel.repaint();
+            }
+        });
+        sortVertexWeightItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graph.sortByVertexWeight();
                 gridPanel.repaint();
             }
         });

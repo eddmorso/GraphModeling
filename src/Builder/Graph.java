@@ -152,6 +152,7 @@ public class Graph implements Serializable {
         }
     }
 
+    //not suitable here code, redo!!! ___CRUCIAL___
     public boolean hasLooping(Vertex startVertex, Vertex endVertex){
 
         List route = new LinkedList();
@@ -215,9 +216,18 @@ public class Graph implements Serializable {
             }
             keyVertex = vertex;
         }
-
+        if(route.contains(null)){
+            return false;
+        }
         System.out.println(route);
         return true;
+    }
+
+    public void sortByVertexWeight(){
+        if(!vertexList.isEmpty()){
+            Collections.sort(vertexList);
+            System.out.println(vertexList);
+        }
     }
 
 //    public void removeVertex(int id){

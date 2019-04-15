@@ -43,4 +43,18 @@ public class Vertex extends GraphElement implements Serializable {
     public String toString() {
         return String.valueOf(id);
     }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Vertex){
+            Vertex vertex = (Vertex) obj;
+            return vertex.getId() == getId() && vertex.getX() == getX() && vertex.getY() == getY();
+        }
+        return false;
+    }
 }

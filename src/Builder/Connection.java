@@ -27,10 +27,15 @@ public class Connection extends GraphElement implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return connectionName.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if(obj instanceof Connection) {
             Connection connection = (Connection) obj;
-            return connection.getStartVertex().equals((startVertex)) && connection.getEndVertex().equals(endVertex);
+            return getConnectionName().equals(connection.getConnectionName());
         }
         return false;
     }

@@ -2,24 +2,17 @@ package Builder;
 
 import java.io.Serializable;
 
-public class Vertex implements Serializable, Comparable<Vertex> {
+public class Vertex extends GraphElement implements Comparable<Vertex>, Serializable {
+
     private static int counter;
-    private int id, weight, x, y;
+    private int id, x, y;
 
     public Vertex(int weight, int x, int y){
+        super(weight);
         id = counter;
-        this.weight = weight;
         this.x = x;
         this.y = y;
         counter++;
-    }
-
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
-
-    public int getWeight() {
-        return weight;
     }
 
     public int getId() {
@@ -53,9 +46,9 @@ public class Vertex implements Serializable, Comparable<Vertex> {
 
     @Override
     public int compareTo(Vertex o) {
-        if(weight == o.weight){
+        if(getWeight() == o.getWeight()){
             return 0;
-        }else if(weight > o.weight){
+        }else if(getWeight() > o.getWeight()){
             return -1;
         }else
             return 1;

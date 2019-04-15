@@ -2,13 +2,13 @@ package Builder;
 
 import java.io.Serializable;
 
-public class Connection implements Serializable {
-    private int weight;
+public class Connection extends GraphElement implements Serializable {
+
     private Vertex startVertex, endVertex;
     private String connectionName;
 
     public Connection(int weight, Vertex startVertex, Vertex endVertex){
-        this.weight = weight;
+        super(weight);
         this.startVertex = startVertex;
         this.endVertex = endVertex;
         connectionName = startVertex.getId() + "/" + endVertex.getId();
@@ -24,14 +24,6 @@ public class Connection implements Serializable {
 
     public Vertex getEndVertex() {
         return endVertex;
-    }
-
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
-
-    public int getWeight() {
-        return weight;
     }
 
     @Override

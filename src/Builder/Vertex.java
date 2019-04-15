@@ -2,7 +2,7 @@ package Builder;
 
 import java.io.Serializable;
 
-public class Vertex extends GraphElement implements Comparable<Vertex>, Serializable {
+public class Vertex extends GraphElement implements Serializable {
 
     private static int counter;
     private int id, x, y;
@@ -42,15 +42,5 @@ public class Vertex extends GraphElement implements Comparable<Vertex>, Serializ
     @Override
     public String toString() {
         return String.valueOf(id);
-    }
-
-    @Override
-    public int compareTo(Vertex o) {
-        if(getWeight() == o.getWeight()){
-            return 0;
-        }else if(getWeight() > o.getWeight()){
-            return -1;
-        }else
-            return 1;
     }
 }

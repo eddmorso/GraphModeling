@@ -226,7 +226,9 @@ public class Graph implements Serializable {
     public void sortByVertexWeight(){
         if(!vertexList.isEmpty()){
             Collections.sort(vertexList);
+            Collections.sort(connectionList);
             System.out.println(vertexList);
+            System.out.println(connectionList);
         }else
             throw new UIException("Nothing to sort");
     }

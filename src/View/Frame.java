@@ -10,10 +10,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Frame implements Serializable {
+public class Frame {
 
     private JFrame jFrame;
     static Graph graph;
@@ -214,7 +213,7 @@ public class Frame implements Serializable {
                     setWeightField.setText("");
                     gridPanel.repaint();
                 }catch (UIException ex){
-                    JOptionPane.showMessageDialog(null, ex.toString());
+                    JOptionPane.showMessageDialog(null, ex);
                     ex.printStackTrace();
                 }
             }});
@@ -283,7 +282,7 @@ public class Frame implements Serializable {
                                 gridPanel.repaint();
                                 connectionFrame.dispose();
                             }catch (UIException ex){
-                                JOptionPane.showMessageDialog(null, ex.toString());
+                                JOptionPane.showMessageDialog(null, ex);
                                 ex.printStackTrace();
                             }
                         }
@@ -371,8 +370,13 @@ public class Frame implements Serializable {
         sortVertexWeightItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                graph.sortByVertexWeight();
-                gridPanel.repaint();
+                try {
+                    graph.sortByVertexWeight();
+                    gridPanel.repaint();
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, ex);
+                }
             }
         });
         editVertexButton.addActionListener(new ActionListener() {

@@ -8,12 +8,12 @@ import java.awt.*;
 import java.util.List;
 
 public class GridPanel extends JPanel {
-    public int width, height;
 
     @Override
     protected void paintComponent(Graphics g) {
-        width = (this.getWidth())/14;
-        height = (this.getHeight())/14;
+
+        int width = (this.getWidth())/14;
+        int height = (this.getHeight())/14;
 
         Font font = new Font(Font.SANS_SERIF, Font.BOLD, 14);
         g.setFont(font);
@@ -33,8 +33,7 @@ public class GridPanel extends JPanel {
         List<Connection> connections = Frame.graph.getConnectionList();
 
         if(!connections.isEmpty()){
-            for(int i = 0; i < connections.size(); i++){
-                Connection connection = connections.get(i);
+            for(Connection connection : connections){
 
                 int initialX = connection.getStartVertex().getX() * width + width/2;
                 int initialY = connection.getStartVertex().getY() * height + height/2;
@@ -81,8 +80,7 @@ public class GridPanel extends JPanel {
         }
 
         if(!vertices.isEmpty()) {
-            for (int i = 0; i < vertices.size(); i++) {
-                Vertex vertex = vertices.get(i);
+            for (Vertex vertex : vertices) {
                 g.setColor(Color.black);
                 g.fillOval(vertex.getX() * width, vertex.getY() * height, width, height);
 

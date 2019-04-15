@@ -227,7 +227,8 @@ public class Graph implements Serializable {
         if(!vertexList.isEmpty()){
             Collections.sort(vertexList);
             System.out.println(vertexList);
-        }
+        }else
+            throw new UIException("Nothing to sort");
     }
 
 //    public void removeVertex(int id){

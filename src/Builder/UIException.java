@@ -2,7 +2,7 @@ package Builder;
 
 public class UIException extends RuntimeException {
 
-    String message;
+    private String message;
 
     public UIException(String message){
         super(message);

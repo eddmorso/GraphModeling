@@ -244,6 +244,11 @@ public class Graph implements Serializable {
     public boolean hasLooping(Vertex startVertex, Vertex endVertex){
 
         List<Vertex> endsOfGraph = findEndsOfGraph();
+
+        if(endsOfGraph.contains(endVertex)){
+            return false;
+        }
+
         List<Vertex> connectedVertexes = new ArrayList<>();
 
         for(Vertex vertex : graph.keySet()){
@@ -251,9 +256,9 @@ public class Graph implements Serializable {
                 connectedVertexes.add(vertex);
             }
         }
-        if(endsOfGraph.contains(startVertex) && connectedVertexes.contains(endVertex)){
-            return true;
-        }
+
+
+
         return false;
     }
 

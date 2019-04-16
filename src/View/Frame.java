@@ -36,7 +36,9 @@ public class Frame {
         fileMenu.add(saveItem);
         fileMenu.add(openItem);
         JMenuItem sortVertexWeightItem = new JMenuItem("Sort Vertex Weight");
+        JMenuItem sortCriticalRouteItem = new JMenuItem("Sort Critical Route");
         sortMenu.add(sortVertexWeightItem);
+        sortMenu.add(sortCriticalRouteItem);
         jMenuBar.add(fileMenu);
         jMenuBar.add(sortMenu);
         jFrame.setJMenuBar(jMenuBar);
@@ -377,6 +379,12 @@ public class Frame {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, ex);
                 }
+            }
+        });
+        sortCriticalRouteItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graph.sortByCriticalRoute();
             }
         });
         editVertexButton.addActionListener(new ActionListener() {

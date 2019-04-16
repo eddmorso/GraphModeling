@@ -27,5 +27,4 @@ public abstract class GraphElement implements Comparable<GraphElement>, Serializ
         }else
             return 1;
     }
-
 }

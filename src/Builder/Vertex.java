@@ -6,6 +6,7 @@ public class Vertex extends GraphElement implements Serializable {
 
     private static int counter;
     private int id, x, y;
+    private boolean hasConnections;
 
     public Vertex(int weight, int x, int y){
         super(weight);
@@ -47,6 +48,14 @@ public class Vertex extends GraphElement implements Serializable {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    public void setHasConnections(boolean hasConnections){
+        this.hasConnections = hasConnections;
+    }
+
+    public boolean hasConnections(){
+        return hasConnections;
     }
 
     @Override

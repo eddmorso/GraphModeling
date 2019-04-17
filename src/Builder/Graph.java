@@ -242,7 +242,6 @@ public class Graph implements Serializable {
         }
     }
 
-    //not working at all !!! FIX
     public boolean hasLooping(Vertex startVertex, Vertex endVertex){
         List<Connection> route = findRoute(endVertex, startVertex);
         System.out.println(route);

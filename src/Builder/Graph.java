@@ -3,6 +3,7 @@ package Builder;
 import View.Frame;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.util.*;
 
 import static java.util.Map.Entry.comparingByValue;
@@ -70,7 +71,7 @@ public class Graph implements Serializable {
             Connection connection = new Connection(weight, getVertex(startId), getVertex(endId));
 
             if (!hasConnection(connection)) {
-                if(!hasLooping(getVertex(startId), getVertex(endId))) {
+                //if(!hasLooping(getVertex(startId), getVertex(endId))) {
 
                     connectionList.add(connection);
 
@@ -80,9 +81,9 @@ public class Graph implements Serializable {
                     getVertex(endId).setHasConnections(true);
 
                     return connection.getConnectionName();
-                }else{
-                    throw new UIException("Looping connections are not allowed");
-                }
+//                }else{
+//                    throw new UIException("Looping connections are not allowed");
+//                }
             } else {
                 throw new UIException("Connection already exists");
             }
@@ -176,88 +177,69 @@ public class Graph implements Serializable {
             throw new RuntimeException("Vertex do not exist");
         }
 
-        Vertex start = startVertex;
-        Vertex end = endVertex;
+        List<Connection> route = new ArrayList<>();
+        List<Vertex> reachableVertex = new ArrayList<>();
+        Map<Vertex, Vertex> previousStations = new HashMap<>();
 
-        List route = new LinkedList();
-        List reachableStations = new LinkedList();
-        Map previousStations = new HashMap();
-
-        List<Vertex> neighbors = graph.get(start);
-        for(Vertex station : neighbors){
-            if(station.equals(end)){
-                route.add(getConnection(start, end));
+        List<Vertex> neighbors = graph.get(startVertex);
+        for(int i = 0; i < neighbors.size(); i++){
+            Vertex vertex = neighbors.get(i);
+            if(vertex.equals(endVertex)){
+                route.add(getConnection(startVertex, vertex));
                 return route;
             }else{
-                reachableStations.add(station);
-                previousStations.put(station, start);
+                reachableVertex.add(vertex);
+                previousStations.put(vertex, startVertex);
             }
         }
 
-        List nextStaions = new LinkedList();
-        nextStaions.addAll(neighbors);
-        Vertex currentStation = start;
+        List<Vertex> nextStations = new ArrayList<>(neighbors);
+        Vertex currentVertex = startVertex;
 
         searchLoop:
         for(int i = 1; i < vertexList.size(); i++){
-            List tmpNextStations = new LinkedList();
-
-            for(Iterator j = nextStaions.iterator(); j.hasNext(); ){
-                Vertex station = (Vertex) j.next();
-                reachableStations.add(station);
-                currentStation = station;
-                List currentNeighbors = (List)graph.get(currentStation);
-
-                for(Iterator k = currentNeighbors.iterator(); k.hasNext(); ){
-                    Vertex neighbor = (Vertex) k.next();
-
-                    if(neighbor.equals(end)){
-                        reachableStations.add(neighbor);
-                        previousStations.put(neighbor, currentStation);
+            List<Vertex> tmpNextVertexes = new ArrayList<>();
+            for(int j = 0; j < nextStations.size(); j++){
+                Vertex vertex = nextStations.get(j);
+                reachableVertex.add(vertex);
+                currentVertex = vertex;
+                List<Vertex> currentNeighbors = graph.get(currentVertex);
+                for(int k = 0; k < currentNeighbors.size(); k++){
+                    Vertex neighbor = currentNeighbors.get(k);
+                    if(neighbor.equals(endVertex)){
+                        reachableVertex.add(neighbor);
+                        previousStations.put(neighbor, currentVertex);
                         break searchLoop;
-                    }else if(!reachableStations.contains(neighbor)){
-                        reachableStations.add(neighbor);
-                        tmpNextStations.add(neighbor);
-                        previousStations.put(neighbor, currentStation);
+                    }else if(!reachableVertex.contains(neighbor)){
+                        reachableVertex.add(neighbor);
+                        tmpNextVertexes.add(neighbor);
+                        previousStations.put(neighbor, currentVertex);
                     }
                 }
             }
-            nextStaions = tmpNextStations;
+            nextStations = tmpNextVertexes;
         }
 
-        boolean keepLooping = true;
-        Vertex keyStation = end;
-        Vertex station;
 
-        while(keepLooping){
-            station = (Vertex) previousStations.get(keyStation);
-            route.add(0, getConnection(station, keyStation));
-            if(start.equals(station)){
+
+        boolean keepLooping = true;
+        Vertex keyVertex = endVertex;
+        Vertex vertex;
+
+        //for(int i = 0; i < previousStations.size(); i++){
+        while (keepLooping){
+            vertex = previousStations.get(keyVertex);
+            route.add(0, getConnection(vertex, keyVertex));
+            if(startVertex.equals(vertex) || vertex == null){
                 keepLooping = false;
             }
-            keyStation = station;
+            keyVertex = vertex;
         }
         return route;
     }
 
     //not working at all !!! FIX
     public boolean hasLooping(Vertex startVertex, Vertex endVertex){
-
-        List<Vertex> endsOfGraph = findEndsOfGraph();
-
-        if(endsOfGraph.contains(endVertex)){
-            return false;
-        }
-
-        List<Vertex> connectedVertexes = new ArrayList<>();
-
-        for(Vertex vertex : graph.keySet()){
-            if(graph.get(vertex).size() != 0){
-                connectedVertexes.add(vertex);
-            }
-        }
-
-
 
         return false;
     }
@@ -274,50 +256,53 @@ public class Graph implements Serializable {
 
     public void sortByCriticalRoute(){
 
-        List<Vertex> endsOfGraph = findEndsOfGraph();
-        System.out.println(endsOfGraph);
-        List<Connection> route = null;
-        Map<Vertex, Integer> results = new HashMap<>();
+        List<Connection> route = findRoute(getVertex(0), getVertex(9));
+        System.out.println(route);
 
-        for(Vertex startVertex : vertexList){
-
-            ArrayList<Integer> critical = new ArrayList<>();
-
-            for(Vertex endVertex : endsOfGraph){
-
-                if(startVertex.equals(endVertex)) continue;
-
-                route = findRoute(startVertex, endVertex);
-                int weightCounter = 0;
-
-                for(int i = 0; i < route.size(); i++){
-                    weightCounter += route.get(i).getStartVertex().getWeight();
-                }
-                weightCounter += route.get(route.size() - 1).getEndVertex().getWeight();
-
-                critical.add(weightCounter);
-            }
-
-            if(critical.isEmpty()) continue;
-
-            int max = critical.get(0);
-            for(int i = 1; i < critical.size(); i++){
-                if(max < critical.get(i)){
-                    max = critical.get(i);
-                }
-            }
-            results.put(startVertex, max);
-        }
-        //sorting map
-        Map<Vertex, Integer> sorted = results
-                .entrySet()
-                .stream()
-                .sorted(comparingByValue())
-                .collect(
-                        toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2,
-                                LinkedHashMap::new));
-
-        System.out.println(sorted);
+//        List<Vertex> endsOfGraph = findEndsOfGraph();
+//        System.out.println(endsOfGraph);
+//        List<Connection> route = null;
+//        Map<Vertex, Integer> results = new HashMap<>();
+//
+//        for(Vertex startVertex : vertexList){
+//
+//            ArrayList<Integer> critical = new ArrayList<>();
+//
+//            for(Vertex endVertex : endsOfGraph){
+//
+//                if(startVertex.equals(endVertex)) continue;
+//
+//                route = findRoute(startVertex, endVertex);
+//                int weightCounter = 0;
+//
+//                for(int i = 0; i < route.size(); i++){
+//                    weightCounter += route.get(i).getStartVertex().getWeight();
+//                }
+//                weightCounter += route.get(route.size() - 1).getEndVertex().getWeight();
+//
+//                critical.add(weightCounter);
+//            }
+//
+//            if(critical.isEmpty()) continue;
+//
+//            int max = critical.get(0);
+//            for(int i = 1; i < critical.size(); i++){
+//                if(max < critical.get(i)){
+//                    max = critical.get(i);
+//                }
+//            }
+//            results.put(startVertex, max);
+//        }
+//        //sorting map
+//        Map<Vertex, Integer> sorted = results
+//                .entrySet()
+//                .stream()
+//                .sorted(comparingByValue())
+//                .collect(
+//                        toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2,
+//                                LinkedHashMap::new));
+//
+//        System.out.println(sorted);
     }
 
     public ArrayList<Vertex> findEndsOfGraph(){

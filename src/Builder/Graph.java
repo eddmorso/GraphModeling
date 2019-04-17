@@ -256,65 +256,69 @@ public class Graph implements Serializable {
             for(Vertex vertex : vertexList){
                 System.out.print(vertex.getId() + "(" + vertex.getWeight() + ") ");
             }
+            System.out.println();
         }else
             throw new UIException("Nothing to sort");
     }
 
     public void sortByCriticalRoute(){
+        if(!vertexList.isEmpty() && !connectionList.isEmpty()) {
+            List<Vertex> endsOfGraph = findEndsOfGraph();
+            List<Connection> route = null;
+            Map<Vertex, Integer> results = new HashMap<>();
 
-        List<Vertex> endsOfGraph = findEndsOfGraph();
-        List<Connection> route = null;
-        Map<Vertex, Integer> results = new HashMap<>();
+            for (Vertex startVertex : vertexList) {
 
-        for(Vertex startVertex : vertexList){
+                ArrayList<Integer> critical = new ArrayList<>();
 
-            ArrayList<Integer> critical = new ArrayList<>();
+                for (Vertex endVertex : endsOfGraph) {
 
-            for(Vertex endVertex : endsOfGraph){
+                    if (startVertex.equals(endVertex)) continue;
 
-                if(startVertex.equals(endVertex)) continue;
+                    route = findRoute(startVertex, endVertex);
+                    int weightCounter = 0;
 
-                route = findRoute(startVertex, endVertex);
-                int weightCounter = 0;
+                    List<Vertex> routeVertexes = new ArrayList<>();
 
-                List<Vertex> routeVertexes = new ArrayList<>();
-
-                for(Connection connection : route){
-                    if(!routeVertexes.contains(connection.getStartVertex())){
-                        routeVertexes.add(connection.getStartVertex());
+                    for (Connection connection : route) {
+                        if (!routeVertexes.contains(connection.getStartVertex())) {
+                            routeVertexes.add(connection.getStartVertex());
+                        }
+                        if (!routeVertexes.contains(connection.getEndVertex())) {
+                            routeVertexes.add(connection.getEndVertex());
+                        }
                     }
-                    if(!routeVertexes.contains(connection.getEndVertex())){
-                        routeVertexes.add(connection.getEndVertex());
+
+                    for (Vertex vertex : routeVertexes) {
+                        weightCounter += vertex.getWeight();
+                    }
+
+                    critical.add(weightCounter);
+                }
+
+                if (critical.isEmpty()) continue;
+
+                int max = critical.get(0);
+                for (int i = 1; i < critical.size(); i++) {
+                    if (max < critical.get(i)) {
+                        max = critical.get(i);
                     }
                 }
-
-                for(Vertex vertex : routeVertexes){
-                    weightCounter += vertex.getWeight();
-                }
-
-                critical.add(weightCounter);
+                results.put(startVertex, max);
             }
+            //sorting map
+            Map<Vertex, Integer> sorted = results
+                    .entrySet()
+                    .stream()
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                    .collect(
+                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
+                                    LinkedHashMap::new));
 
-            if(critical.isEmpty()) continue;
-
-            int max = critical.get(0);
-            for(int i = 1; i < critical.size(); i++){
-                if(max < critical.get(i)){
-                    max = critical.get(i);
-                }
-            }
-            results.put(startVertex, max);
+            System.out.println(sorted);
+        }else{
+            throw new UIException("Nothing to sort");
         }
-        //sorting map
-        Map<Vertex, Integer> sorted = results
-                .entrySet()
-                .stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(
-                        toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
-                                LinkedHashMap::new));
-
-        System.out.println(sorted);
     }
 
     public ArrayList<Vertex> findEndsOfGraph(){

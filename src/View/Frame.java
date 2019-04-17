@@ -374,7 +374,6 @@ public class Frame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     graph.sortByVertexWeight();
-                    gridPanel.repaint();
                 }catch (Exception ex){
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, ex);
@@ -384,7 +383,12 @@ public class Frame {
         sortCriticalRouteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                graph.sortByCriticalRoute();
+                try {
+                    graph.sortByCriticalRoute();
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, ex);
+                }
             }
         });
         editVertexButton.addActionListener(new ActionListener() {

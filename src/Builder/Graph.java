@@ -244,7 +244,6 @@ public class Graph implements Serializable {
 
     public boolean hasLooping(Vertex startVertex, Vertex endVertex){
         List<Connection> route = findRoute(endVertex, startVertex);
-        System.out.println(route);
         if(route == null || route.isEmpty()){
            return false;
         }
@@ -263,50 +262,59 @@ public class Graph implements Serializable {
 
     public void sortByCriticalRoute(){
 
-//        List<Vertex> endsOfGraph = findEndsOfGraph();
-//        System.out.println(endsOfGraph);
-//        List<Connection> route = null;
-//        Map<Vertex, Integer> results = new HashMap<>();
-//
-//        for(Vertex startVertex : vertexList){
-//
-//            ArrayList<Integer> critical = new ArrayList<>();
-//
-//            for(Vertex endVertex : endsOfGraph){
-//
-//                if(startVertex.equals(endVertex)) continue;
-//
-//                route = findRoute(startVertex, endVertex);
-//                int weightCounter = 0;
-//
-//                for(int i = 0; i < route.size(); i++){
-//                    weightCounter += route.get(i).getStartVertex().getWeight();
-//                }
-//                weightCounter += route.get(route.size() - 1).getEndVertex().getWeight();
-//
-//                critical.add(weightCounter);
-//            }
-//
-//            if(critical.isEmpty()) continue;
-//
-//            int max = critical.get(0);
-//            for(int i = 1; i < critical.size(); i++){
-//                if(max < critical.get(i)){
-//                    max = critical.get(i);
-//                }
-//            }
-//            results.put(startVertex, max);
-//        }
-//        //sorting map
-//        Map<Vertex, Integer> sorted = results
-//                .entrySet()
-//                .stream()
-//                .sorted(comparingByValue())
-//                .collect(
-//                        toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2,
-//                                LinkedHashMap::new));
-//
-//        System.out.println(sorted);
+        List<Vertex> endsOfGraph = findEndsOfGraph();
+        List<Connection> route = null;
+        Map<Vertex, Integer> results = new HashMap<>();
+
+        for(Vertex startVertex : vertexList){
+
+            ArrayList<Integer> critical = new ArrayList<>();
+
+            for(Vertex endVertex : endsOfGraph){
+
+                if(startVertex.equals(endVertex)) continue;
+
+                route = findRoute(startVertex, endVertex);
+                int weightCounter = 0;
+
+                List<Vertex> routeVertexes = new ArrayList<>();
+
+                for(Connection connection : route){
+                    if(!routeVertexes.contains(connection.getStartVertex())){
+                        routeVertexes.add(connection.getStartVertex());
+                    }
+                    if(!routeVertexes.contains(connection.getEndVertex())){
+                        routeVertexes.add(connection.getEndVertex());
+                    }
+                }
+
+                for(Vertex vertex : routeVertexes){
+                    weightCounter += vertex.getWeight();
+                }
+
+                critical.add(weightCounter);
+            }
+
+            if(critical.isEmpty()) continue;
+
+            int max = critical.get(0);
+            for(int i = 1; i < critical.size(); i++){
+                if(max < critical.get(i)){
+                    max = critical.get(i);
+                }
+            }
+            results.put(startVertex, max);
+        }
+        //sorting map
+        Map<Vertex, Integer> sorted = results
+                .entrySet()
+                .stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(
+                        toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
+                                LinkedHashMap::new));
+
+        System.out.println(sorted);
     }
 
     public ArrayList<Vertex> findEndsOfGraph(){

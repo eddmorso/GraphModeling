@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Frame {
 
@@ -373,7 +375,13 @@ public class Frame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    graph.sortByVertexWeight();
+                    List<Vertex> sortedList = graph.sortByVertexWeight();
+
+                    System.out.println("Vertex   " + "   Weight");
+
+                    for(Vertex vertex : sortedList){
+                        System.out.println("   " + vertex.getId() + "           " + vertex.getWeight());
+                    }
                 }catch (Exception ex){
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, ex);
@@ -384,7 +392,13 @@ public class Frame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    graph.sortByCriticalRoute();
+                    Map<Vertex, Integer> sortedMap = graph.sortByCriticalRoute();
+
+                    System.out.println("Vertex   " + "   Critical route");
+
+                    for(Vertex vertex : sortedMap.keySet()){
+                        System.out.println("   " + vertex.getId() + "             " + sortedMap.get(vertex));
+                    }
                 }catch (Exception ex){
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, ex);

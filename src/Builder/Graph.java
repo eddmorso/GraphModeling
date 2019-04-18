@@ -250,18 +250,19 @@ public class Graph implements Serializable {
         return true;
     }
 
-    public void sortByVertexWeight(){
+    public List<Vertex> sortByVertexWeight(){
+
         if(!vertexList.isEmpty()){
-            Collections.sort(vertexList);
-            for(Vertex vertex : vertexList){
-                System.out.print(vertex.getId() + "(" + vertex.getWeight() + ") ");
-            }
-            System.out.println();
+
+            List<Vertex> sorted = new ArrayList<>(vertexList);
+            Collections.sort(sorted);
+
+            return sorted;
         }else
             throw new UIException("Nothing to sort");
     }
 
-    public void sortByCriticalRoute(){
+    public Map<Vertex, Integer> sortByCriticalRoute(){
         if(!vertexList.isEmpty() && !connectionList.isEmpty()) {
             List<Vertex> endsOfGraph = findEndsOfGraph();
             List<Connection> route = null;
@@ -314,8 +315,7 @@ public class Graph implements Serializable {
                     .collect(
                             toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
                                     LinkedHashMap::new));
-
-            System.out.println(sorted);
+            return sorted;
         }else{
             throw new UIException("Nothing to sort");
         }

@@ -3,11 +3,8 @@ package Builder;
 import View.Frame;
 
 import java.io.*;
-import java.net.ConnectException;
 import java.util.*;
 
-import static java.util.Map.Entry.comparingByValue;
-import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toMap;
 
 public class Graph implements Serializable {
@@ -149,7 +146,7 @@ public class Graph implements Serializable {
                 return c;
             }
         }
-        return null;
+        throw new RuntimeException(startVertex.getId() + "/" + endVertex.getId() + " Connection doesn't exist");
     }
 
     public void addToGraph(Vertex startVertex, Vertex endVertex){
@@ -171,80 +168,65 @@ public class Graph implements Serializable {
         }
     }
 
-    public List<Connection> findRoute(Vertex startVertex, Vertex endVertex) {
+    public List<List<Vertex>> findRoutes(Vertex start, Vertex finish) {
 
-        if(!hasVertex(startVertex.getId()) && !hasVertex(endVertex.getId())){
+        if(!hasVertex(start.getId()) && !hasVertex(finish.getId())){
             throw new RuntimeException("Vertex do not exist");
-        }else if(startVertex.hasConnections() && endVertex.hasConnections()) {
-
-            List<Connection> route = new ArrayList<>();
-            List<Vertex> reachableVertex = new ArrayList<>();
-            Map<Vertex, Vertex> previousStations = new HashMap<>();
-
-            List<Vertex> neighbors = graph.get(startVertex);
-            for (int i = 0; i < neighbors.size(); i++) {
-                Vertex vertex = neighbors.get(i);
-                if (vertex.equals(endVertex)) {
-                    route.add(getConnection(startVertex, vertex));
-                    return route;
-                } else {
-                    reachableVertex.add(vertex);
-                    previousStations.put(vertex, startVertex);
-                }
-            }
-
-            List<Vertex> nextStations = new ArrayList<>(neighbors);
-            Vertex currentVertex = startVertex;
-
-            searchLoop:
-            for (int i = 1; i < vertexList.size(); i++) {
-                List<Vertex> tmpNextVertexes = new ArrayList<>();
-                for (int j = 0; j < nextStations.size(); j++) {
-                    Vertex vertex = nextStations.get(j);
-                    reachableVertex.add(vertex);
-                    currentVertex = vertex;
-                    List<Vertex> currentNeighbors = graph.get(currentVertex);
-                    for (int k = 0; k < currentNeighbors.size(); k++) {
-                        Vertex neighbor = currentNeighbors.get(k);
-                        if (neighbor.equals(endVertex)) {
-                            reachableVertex.add(neighbor);
-                            previousStations.put(neighbor, currentVertex);
-                            break searchLoop;
-                        } else if (!reachableVertex.contains(neighbor)) {
-                            reachableVertex.add(neighbor);
-                            tmpNextVertexes.add(neighbor);
-                            previousStations.put(neighbor, currentVertex);
-                        }
-                    }
-                }
-                nextStations = tmpNextVertexes;
-            }
-
-
-            boolean keepLooping = true;
-            Vertex keyVertex = endVertex;
-            Vertex vertex;
-
-            while (keepLooping) {
-                vertex = previousStations.get(keyVertex);
-                if(vertex == null){
-                    break;
-                }
-                route.add(0, getConnection(vertex, keyVertex));
-                if (startVertex.equals(vertex)) {
-                    keepLooping = false;
-                }
-                keyVertex = vertex;
-            }
-            return route;
-        }else {
-            return null;
         }
+
+        List<List<Vertex>> routes = new ArrayList<>();
+
+        boolean[] isVisited = new boolean[vertexList.size()];
+        List<Vertex> pathList = new ArrayList<>();
+
+        //add source to path[]
+        pathList.add(start);
+
+        //Call recursive utility
+        printAllPathsUtil(start, finish, isVisited, pathList, routes);
+
+        return routes;
+    }
+
+    private void printAllPathsUtil(Vertex start, Vertex end, boolean[] isVisited,
+                                   List<Vertex> localPathList, List<List<Vertex>> routes) {
+
+        // Mark the current node
+        isVisited[start.getId()] = true;
+
+        if (start.equals(end)){
+            List<Vertex> route = new ArrayList<>(localPathList);
+            routes.add(route);
+            System.out.println(routes);
+        }
+
+        // Recur for all the vertices
+        // adjacent to current vertex
+        for (Vertex vertex : graph.get(start)){
+
+            if (!isVisited[vertex.getId()]){
+
+                // store current node
+                // in path[]
+                localPathList.add(vertex);
+                printAllPathsUtil(vertex, end, isVisited, localPathList, routes);
+
+                // remove current node
+                // in path[]
+                localPathList.remove(vertex);
+            }
+        }
+
+        // Mark the current node
+        isVisited[start.getId()] = false;
     }
 
     public boolean hasLooping(Vertex startVertex, Vertex endVertex){
-        List<Connection> route = findRoute(endVertex, startVertex);
-        if(route == null || route.isEmpty()){
+
+        if(!startVertex.hasConnections() || !endVertex.hasConnections()) return false;
+
+        List<List<Vertex>> routes = findRoutes(endVertex, startVertex);
+        if(routes.isEmpty()){
            return false;
         }
         return true;
@@ -263,49 +245,39 @@ public class Graph implements Serializable {
     }
 
     public Map<Vertex, Integer> sortByCriticalRoute(){
+
         if(!vertexList.isEmpty() && !connectionList.isEmpty()) {
+
             List<Vertex> endsOfGraph = findEndsOfGraph();
-            List<Connection> route = null;
+            List<List<Vertex>> routes = null;
             Map<Vertex, Integer> results = new HashMap<>();
+            int weightSum = 0;
+            List<Integer> weights = new ArrayList<>();
 
-            for (Vertex startVertex : vertexList) {
+            for(Vertex start : vertexList){
+                for(Vertex end : endsOfGraph){
 
-                ArrayList<Integer> critical = new ArrayList<>();
+                    if(start.equals(end)) continue;
 
-                for (Vertex endVertex : endsOfGraph) {
-
-                    if (startVertex.equals(endVertex)) continue;
-
-                    route = findRoute(startVertex, endVertex);
-                    int weightCounter = 0;
-
-                    List<Vertex> routeVertexes = new ArrayList<>();
-
-                    for (Connection connection : route) {
-                        if (!routeVertexes.contains(connection.getStartVertex())) {
-                            routeVertexes.add(connection.getStartVertex());
+                    routes = findRoutes(start, end);
+                    if(!routes.isEmpty()){
+                        for(List<Vertex> route : routes){
+                            for(Vertex vertex : route){
+                                weightSum += vertex.getWeight();
+                            }
+                            weights.add(weightSum);
+                            weightSum = 0;
                         }
-                        if (!routeVertexes.contains(connection.getEndVertex())) {
-                            routeVertexes.add(connection.getEndVertex());
+                        int max = 0;
+                        for(int weight : weights){
+                            if(max < weight){
+                                max = weight;
+                            }
                         }
-                    }
-
-                    for (Vertex vertex : routeVertexes) {
-                        weightCounter += vertex.getWeight();
-                    }
-
-                    critical.add(weightCounter);
-                }
-
-                if (critical.isEmpty()) continue;
-
-                int max = critical.get(0);
-                for (int i = 1; i < critical.size(); i++) {
-                    if (max < critical.get(i)) {
-                        max = critical.get(i);
+                        results.put(start, max);
+                        weights.clear();
                     }
                 }
-                results.put(startVertex, max);
             }
             //sorting map
             Map<Vertex, Integer> sorted = results

@@ -197,7 +197,6 @@ public class Graph implements Serializable {
         if (start.equals(end)){
             List<Vertex> route = new ArrayList<>(localPathList);
             routes.add(route);
-            System.out.println(routes);
         }
 
         // Recur for all the vertices
@@ -268,16 +267,20 @@ public class Graph implements Serializable {
                             weights.add(weightSum);
                             weightSum = 0;
                         }
-                        int max = 0;
-                        for(int weight : weights){
-                            if(max < weight){
-                                max = weight;
-                            }
-                        }
-                        results.put(start, max);
-                        weights.clear();
                     }
                 }
+                int max = -1;
+                for(int weight : weights){
+                    if(max < weight){
+                        max = weight;
+                    }
+                }
+                if(max == -1){
+                    results.put(start, start.getWeight());
+                    weights.clear();
+                }else
+                results.put(start, max);
+                weights.clear();
             }
             //sorting map
             Map<Vertex, Integer> sorted = results

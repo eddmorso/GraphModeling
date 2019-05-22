@@ -190,7 +190,9 @@ public class Graph implements Serializable {
 
     private void printAllPathsUtil(Vertex start, Vertex end, boolean[] isVisited,
                                    List<Vertex> localPathList, List<List<Vertex>> routes) {
-
+        if(!start.hasConnections() || !end.hasConnections()){
+            return;
+        }
         // Mark the current node
         isVisited[start.getId()] = true;
 

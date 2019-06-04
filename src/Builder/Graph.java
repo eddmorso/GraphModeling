@@ -7,7 +7,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 
-public class Graph implements Serializable {
+public class Graph implements Serializable{
 
     private List<Vertex> vertexList;
     private List<Connection> connectionList;
@@ -236,9 +236,13 @@ public class Graph implements Serializable {
     public List<Vertex> sortByVertexWeight(){
 
         if(!vertexList.isEmpty()){
+            long startTime = System.nanoTime();
 
             List<Vertex> sorted = new ArrayList<>(vertexList);
             Collections.sort(sorted);
+
+            long timeRes = System.nanoTime() - startTime;
+            System.out.println(timeRes);
 
             return sorted;
         }else
@@ -248,6 +252,7 @@ public class Graph implements Serializable {
     public Map<Vertex, Integer> sortByCriticalRoute(){
 
         if(!vertexList.isEmpty() && !connectionList.isEmpty()) {
+            long startTime = System.nanoTime();
 
             List<Vertex> endsOfGraph = findEndsOfGraph();
             List<List<Vertex>> routes = null;
@@ -292,6 +297,10 @@ public class Graph implements Serializable {
                     .collect(
                             toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
                                     LinkedHashMap::new));
+
+            long timeRes = System.nanoTime() - startTime;
+            System.out.println(timeRes);
+
             return sorted;
         }else{
             throw new UIException("Nothing to sort");

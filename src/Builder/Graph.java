@@ -1,5 +1,6 @@
 package Builder;
 
+import Exceptions.UIException;
 import View.Frame;
 
 import java.io.*;
@@ -21,13 +22,11 @@ public class Graph implements Serializable{
 
     public int addVertex(String x, String y, String weight) {
         Vertex vertex;
-
         String numX;
         String numY;
         String numW;
 
         if (!x.equals("") && !y.equals("") && !weight.equals("")) {
-
             char characters[] = x.toCharArray();
             char characters1[] = y.toCharArray();
             char characters2[] = weight.toCharArray();

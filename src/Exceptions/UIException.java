@@ -1,4 +1,4 @@
-package Builder;
+package Exceptions;
 
 public class UIException extends RuntimeException {
 

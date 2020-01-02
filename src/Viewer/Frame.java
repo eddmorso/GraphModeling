@@ -1,4 +1,4 @@
-package View;
+package Viewer;
 
 import Builder.Connection;
 import Builder.Graph;
@@ -7,20 +7,17 @@ import Builder.Vertex;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class Frame {
-
     private JFrame jFrame;
-    static Graph graph;
+    private Graph graph;
 
     public void init() {
-        graph = new Graph();
+        graph = Graph.getInstance();
 
         jFrame = new JFrame("Graph modeling");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

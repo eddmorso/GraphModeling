@@ -1,7 +1,7 @@
 package Builder;
 
 import Exceptions.UIException;
-import View.Frame;
+import Viewer.Frame;
 
 import java.io.*;
 import java.util.*;
@@ -12,12 +12,20 @@ public class Graph implements Serializable{
 
     private List<Vertex> vertexList;
     private List<Connection> connectionList;
-    private Map<Vertex, List<Vertex>> graph;
+    private Map<Vertex, List<Vertex>> graphMap;
+    private static Graph graph;
 
-    public Graph() {
+    private Graph() {
         vertexList = new ArrayList<>();
         connectionList = new ArrayList<>();
-        graph = new HashMap<>();
+        graphMap = new HashMap<>();
+    }
+
+    public static Graph getInstance(){
+        if (graph == null) {
+            graph = new Graph();
+        }
+        return graph;
     }
 
     public int addVertex(String x, String y, String weight) {
@@ -149,21 +157,21 @@ public class Graph implements Serializable{
     }
 
     public void addToGraph(Vertex startVertex, Vertex endVertex){
-        if(graph.keySet().contains(startVertex) && !graph.get(startVertex).isEmpty()){
-            List<Vertex> connectingVertex = graph.get(startVertex);
+        if(graphMap.keySet().contains(startVertex) && !graphMap.get(startVertex).isEmpty()){
+            List<Vertex> connectingVertex = graphMap.get(startVertex);
             if(!connectingVertex.contains(endVertex)){
                 connectingVertex.add(endVertex);
             }
-        }else if(graph.keySet().contains(startVertex) && graph.get(startVertex).isEmpty()){
-            graph.get(startVertex).add(endVertex);
-        }else if(!graph.keySet().contains(startVertex)){
+        }else if(graphMap.keySet().contains(startVertex) && graphMap.get(startVertex).isEmpty()){
+            graphMap.get(startVertex).add(endVertex);
+        }else if(!graphMap.keySet().contains(startVertex)){
             List<Vertex> connectingVertex = new ArrayList<>();
             connectingVertex.add(endVertex);
-            graph.put(startVertex, connectingVertex);
+            graphMap.put(startVertex, connectingVertex);
         }
-        if(!graph.keySet().contains(endVertex)){
+        if(!graphMap.keySet().contains(endVertex)){
             List<Vertex> connectingVertex = new ArrayList<>();
-            graph.put(endVertex, connectingVertex);
+            graphMap.put(endVertex, connectingVertex);
         }
     }
 
@@ -202,7 +210,7 @@ public class Graph implements Serializable{
 
         // Recur for all the vertices
         // adjacent to current vertex
-        for (Vertex vertex : graph.get(start)){
+        for (Vertex vertex : graphMap.get(start)){
 
             if (!isVisited[vertex.getId()]){
 
@@ -310,8 +318,8 @@ public class Graph implements Serializable{
 
         ArrayList<Vertex> endsList = new ArrayList<>();
 
-        for(Vertex vertex : graph.keySet()){
-            if(graph.get(vertex).isEmpty()){
+        for(Vertex vertex : graphMap.keySet()){
+            if(graphMap.get(vertex).isEmpty()){
                 endsList.add(vertex);
             }
         }
@@ -339,7 +347,7 @@ public class Graph implements Serializable{
 
         objectOutputStream.writeObject(vertexList);
         objectOutputStream.writeObject(connectionList);
-        objectOutputStream.writeObject(graph);
+        objectOutputStream.writeObject(graphMap);
         objectOutputStream.writeObject(counter);
 
         objectOutputStream.close();
@@ -357,7 +365,7 @@ public class Graph implements Serializable{
 
         vertexList = vertices;
         connectionList = connections;
-        this.graph = graph;
+        this.graphMap = graph;
         Vertex.setCounter(counter);
     }
 
@@ -372,6 +380,6 @@ public class Graph implements Serializable{
     public void clearAll(){
         vertexList.clear();
         connectionList.clear();
-        graph.clear();
+        graphMap.clear();
     }
 }

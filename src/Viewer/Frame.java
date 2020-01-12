@@ -231,10 +231,11 @@ public class Frame {
             JComboBox endVertexComboBox = new JComboBox();
 
             if (!graph.getVertexList().isEmpty()) {
-                for (Vertex vertex : graph.getVertexList()) {
-                    startVertexComboBox.addItem(vertex.getId());
-                    endVertexComboBox.addItem(vertex.getId());
-                }
+                graph.getVertexList().forEach(v -> {
+                    startVertexComboBox.addItem(v.getId());
+                    endVertexComboBox.addItem(v.getId());
+                });
+
             } else {
                 JOptionPane.showMessageDialog(null, "Add some vertexes");
                 return;
@@ -451,14 +452,15 @@ public class Frame {
     }
 
     public static String checkCharacters(char [] arr){
-        String s = "";
-        for(int i = 0; i < arr.length; i++) {
-            if (arr[i] >= 48 && arr[i] <=57) {
-                s += (arr[i]);
+        StringBuilder s = new StringBuilder();
+
+        for(Character c : arr) {
+            if (c.toString().matches("\\d")) {
+                s.append(c);
             }else{
-                return s;
+                return s.toString();
             }
         }
-        return s;
+        return s.toString();
     }
 }

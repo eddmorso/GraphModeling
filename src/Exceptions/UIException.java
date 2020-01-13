@@ -1,7 +1,6 @@
 package Exceptions;
 
 public class UIException extends RuntimeException {
-
     private String message;
 
     public UIException(String message){

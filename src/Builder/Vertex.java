@@ -3,7 +3,6 @@ package Builder;
 import java.io.Serializable;
 
 public class Vertex extends GraphElement implements Serializable {
-
     private static int counter;
     private int id, x, y;
     private boolean hasConnections;

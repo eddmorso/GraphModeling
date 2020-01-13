@@ -28,16 +28,15 @@ public class GridPanel extends JPanel {
                 g.drawLine(i * width, j * height, i * width, j * height);
             }
         }
-
         if (!connections.isEmpty()) {
-            drawConnection(g, height, width, connections);
+            drawConnections(g, height, width, connections);
         }
         if (!vertices.isEmpty()) {
-            drawVertex(g, height, width, vertices);
+            drawVertices(g, height, width, vertices);
         }
     }
 
-    private void drawVertex(Graphics g, int height, int width, List<Vertex> vertices){
+    private void drawVertices(Graphics g, int height, int width, List<Vertex> vertices){
         for (Vertex vertex : vertices) {
             g.setColor(Color.black);
             g.fillOval(vertex.getX() * width, vertex.getY() * height, width, height);
@@ -49,7 +48,7 @@ public class GridPanel extends JPanel {
         }
     }
 
-    private void drawConnection(Graphics g, int height, int width, List<Connection> connections) {
+    private void drawConnections(Graphics g, int height, int width, List<Connection> connections) {
         for (Connection connection : connections){
             int initialX = connection.getStartVertex().getX() * width + width/2;
             int initialY = connection.getStartVertex().getY() * height + height/2;

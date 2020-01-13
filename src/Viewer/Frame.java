@@ -69,7 +69,6 @@ public class Frame {
         insidePanel.add(BorderLayout.WEST, yAxisName);
         insidePanel.add(BorderLayout.NORTH, xAxisName);
 
-
         JLabel xLabel = new JLabel("X: ");
         JTextField setXField = new JTextField();
 

@@ -2,14 +2,12 @@ package Builder;
 
 import Exceptions.UIException;
 import Viewer.Frame;
-
 import java.io.*;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 
-public class Graph implements Serializable{
-
+public class Graph implements Serializable {
     private List<Vertex> vertexList;
     private List<Connection> connectionList;
     private Map<Vertex, List<Vertex>> graphMap;
@@ -21,7 +19,7 @@ public class Graph implements Serializable{
         graphMap = new HashMap<>();
     }
 
-    public static Graph getInstance(){
+    public static Graph getInstance() {
         if (graph == null) {
             graph = new Graph();
         }
@@ -35,13 +33,13 @@ public class Graph implements Serializable{
         String numW;
 
         if (!x.equals("") && !y.equals("") && !weight.equals("")) {
-            char characters[] = x.toCharArray();
-            char characters1[] = y.toCharArray();
-            char characters2[] = weight.toCharArray();
+            char [] xChars = x.toCharArray();
+            char [] yChars = y.toCharArray();
+            char [] characters2 = weight.toCharArray();
 
-            if (characters.length <= 2 && characters1.length <= 2) {
-                numX = Frame.checkCharacters(characters);
-                numY = Frame.checkCharacters(characters1);
+            if (xChars.length <= 2 && yChars.length <= 2) {
+                numX = Frame.checkCharacters(xChars);
+                numY = Frame.checkCharacters(yChars);
                 numW = Frame.checkCharacters(characters2);
                 if (numW.equals("") || numX.equals("") || numY.equals("")) {
                     throw new UIException("Unexpected token");
@@ -69,16 +67,12 @@ public class Graph implements Serializable{
     }
 
     public String addConnection(int weight, int startId, int endId) {
-
         if (hasVertex(startId) && hasVertex(endId)) {
-
             Connection connection = new Connection(weight, getVertex(startId), getVertex(endId));
 
             if (!hasConnection(connection)) {
-                if(!hasLooping(getVertex(startId), getVertex(endId))) {
-
+                if (!hasLooping(getVertex(startId), getVertex(endId))) {
                     connectionList.add(connection);
-
                     addToGraph(getVertex(startId), getVertex(endId));
 
                     getVertex(startId).setHasConnections(true);
@@ -96,18 +90,18 @@ public class Graph implements Serializable{
         }
     }
 
-    public boolean hasVertex(String x, String y){
-        for(Vertex v : vertexList){
-            if(v.getX() == Integer.valueOf(x) &&
-                    v.getY() == Integer.valueOf(y)){
+    private boolean hasVertex(String x, String y) {
+        for (Vertex v : vertexList) {
+            if (v.getX() == Integer.valueOf(x) &&
+                    v.getY() == Integer.valueOf(y)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean hasVertex(int id){
-        for(Vertex v : vertexList){
+    private boolean hasVertex(int id) {
+        for (Vertex v : vertexList) {
             if(v.getId() == id){
                 return true;
             }
@@ -115,31 +109,31 @@ public class Graph implements Serializable{
         return false;
     }
 
-    public boolean hasConnection(Connection connection){
+    private boolean hasConnection(Connection connection) {
         for(Connection c : connectionList){
             if(c.equals(connection)) return true;
         }
         return false;
     }
 
-    public boolean hasConnection(String name){
-        for(Connection c : connectionList){
-            if(c.getConnectionName().equals(name)) return true;
+    private boolean hasConnection(String name) {
+        for (Connection c : connectionList) {
+            if (c.getConnectionName().equals(name)) return true;
         }
         return false;
     }
 
-    public Vertex getVertex(int id){
-        if(hasVertex(id)){
-            for(Vertex vertex : vertexList){
+    public Vertex getVertex(int id) {
+        if (hasVertex(id)) {
+            for (Vertex vertex : vertexList) {
                 if(vertex.getId() == id) return vertex;
             }
         }
         return null;
     }
 
-    public Connection getConnection(String name){
-        if(hasConnection(name)){
+    public Connection getConnection(String name) {
+        if (hasConnection(name)) {
             for(Connection c : connectionList){
                 if(c.getConnectionName().equals(name)) return c;
             }
@@ -147,7 +141,7 @@ public class Graph implements Serializable{
         return null;
     }
 
-    public Connection getConnection(Vertex startVertex, Vertex endVertex){
+    public Connection getConnection(Vertex startVertex, Vertex endVertex) {
         for(Connection c : connectionList){
             if(c.getStartVertex().equals(startVertex) && c.getEndVertex().equals(endVertex)){
                 return c;
@@ -156,33 +150,30 @@ public class Graph implements Serializable{
         throw new RuntimeException(startVertex.getId() + "/" + endVertex.getId() + " Connection doesn't exist");
     }
 
-    public void addToGraph(Vertex startVertex, Vertex endVertex){
-        if(graphMap.keySet().contains(startVertex) && !graphMap.get(startVertex).isEmpty()){
+    private void addToGraph(Vertex startVertex, Vertex endVertex) {
+        if (graphMap.containsKey(startVertex) && !graphMap.get(startVertex).isEmpty()) {
             List<Vertex> connectingVertex = graphMap.get(startVertex);
-            if(!connectingVertex.contains(endVertex)){
+            if (!connectingVertex.contains(endVertex)) {
                 connectingVertex.add(endVertex);
             }
-        }else if(graphMap.keySet().contains(startVertex) && graphMap.get(startVertex).isEmpty()){
+        } else if (graphMap.containsKey(startVertex) && graphMap.get(startVertex).isEmpty()) {
             graphMap.get(startVertex).add(endVertex);
-        }else if(!graphMap.keySet().contains(startVertex)){
+        } else if (!graphMap.containsKey(startVertex)) {
             List<Vertex> connectingVertex = new ArrayList<>();
             connectingVertex.add(endVertex);
             graphMap.put(startVertex, connectingVertex);
         }
-        if(!graphMap.keySet().contains(endVertex)){
+        if (!graphMap.containsKey(endVertex)) {
             List<Vertex> connectingVertex = new ArrayList<>();
             graphMap.put(endVertex, connectingVertex);
         }
     }
 
-    public List<List<Vertex>> findRoutes(Vertex start, Vertex finish) {
-
-        if(!hasVertex(start.getId()) && !hasVertex(finish.getId())){
+    private List<List<Vertex>> findRoutes(Vertex start, Vertex finish) {
+        if (!hasVertex(start.getId()) && !hasVertex(finish.getId())) {
             throw new RuntimeException("Vertex do not exist");
         }
-
         List<List<Vertex>> routes = new ArrayList<>();
-
         boolean[] isVisited = new boolean[vertexList.size()];
         List<Vertex> pathList = new ArrayList<>();
 
@@ -197,7 +188,7 @@ public class Graph implements Serializable{
 
     private void printAllPathsUtil(Vertex start, Vertex end, boolean[] isVisited,
                                    List<Vertex> localPathList, List<List<Vertex>> routes) {
-        if(!start.hasConnections() || !end.hasConnections()){
+        if (!start.hasConnections() || !end.hasConnections()) {
             return;
         }
         // Mark the current node
@@ -211,44 +202,34 @@ public class Graph implements Serializable{
         // Recur for all the vertices
         // adjacent to current vertex
         for (Vertex vertex : graphMap.get(start)){
-
             if (!isVisited[vertex.getId()]){
-
                 // store current node
                 // in path[]
                 localPathList.add(vertex);
                 printAllPathsUtil(vertex, end, isVisited, localPathList, routes);
-
                 // remove current node
                 // in path[]
                 localPathList.remove(vertex);
             }
         }
-
         // Mark the current node
         isVisited[start.getId()] = false;
     }
 
-    public boolean hasLooping(Vertex startVertex, Vertex endVertex){
-
-        if(!startVertex.hasConnections() || !endVertex.hasConnections()) return false;
-
+    private boolean hasLooping(Vertex startVertex, Vertex endVertex){
+        if (!startVertex.hasConnections() || !endVertex.hasConnections()) return false;
         List<List<Vertex>> routes = findRoutes(endVertex, startVertex);
-        if(routes.isEmpty()){
-           return false;
-        }
-        return true;
+
+        return routes.isEmpty();
     }
 
-    public List<Vertex> sortByVertexWeight(){
-
+    public List<Vertex> sortByVertexWeight() {
         if(!vertexList.isEmpty()){
             long startTime = System.nanoTime();
-
             List<Vertex> sorted = new ArrayList<>(vertexList);
-            Collections.sort(sorted);
-
             long timeRes = System.nanoTime() - startTime;
+
+            Collections.sort(sorted);
             System.out.println(timeRes);
 
             return sorted;
@@ -256,26 +237,23 @@ public class Graph implements Serializable{
             throw new UIException("Nothing to sort");
     }
 
-    public Map<Vertex, Integer> sortByCriticalRoute(){
-
-        if(!vertexList.isEmpty() && !connectionList.isEmpty()) {
+    public Map<Vertex, Integer> sortByCriticalRoute() {
+        if (!vertexList.isEmpty() && !connectionList.isEmpty()) {
             long startTime = System.nanoTime();
-
             List<Vertex> endsOfGraph = findEndsOfGraph();
-            List<List<Vertex>> routes = null;
+            List<List<Vertex>> routes;
             Map<Vertex, Integer> results = new HashMap<>();
             int weightSum = 0;
             List<Integer> weights = new ArrayList<>();
 
             for(Vertex start : vertexList){
                 for(Vertex end : endsOfGraph){
-
                     if(start.equals(end)) continue;
-
                     routes = findRoutes(start, end);
-                    if(!routes.isEmpty()){
-                        for(List<Vertex> route : routes){
-                            for(Vertex vertex : route){
+
+                    if (!routes.isEmpty()) {
+                        for (List<Vertex> route : routes) {
+                            for (Vertex vertex : route) {
                                 weightSum += vertex.getWeight();
                             }
                             weights.add(weightSum);
@@ -284,15 +262,15 @@ public class Graph implements Serializable{
                     }
                 }
                 int max = -1;
-                for(int weight : weights){
-                    if(max < weight){
+                for (int weight : weights) {
+                    if (max < weight) {
                         max = weight;
                     }
                 }
-                if(max == -1){
+                if (max == -1) {
                     results.put(start, start.getWeight());
                     weights.clear();
-                }else
+                } else
                 results.put(start, max);
                 weights.clear();
             }
@@ -314,8 +292,7 @@ public class Graph implements Serializable{
         }
     }
 
-    public ArrayList<Vertex> findEndsOfGraph(){
-
+    private ArrayList<Vertex> findEndsOfGraph() {
         ArrayList<Vertex> endsList = new ArrayList<>();
 
         for(Vertex vertex : graphMap.keySet()){
@@ -340,7 +317,7 @@ public class Graph implements Serializable{
 //        }
 //    }
 
-    public void saveGraph(File file) throws Exception{
+    public void saveGraph(File file) throws Exception {
         int counter = Vertex.getCounter();
         FileOutputStream outputStream = new FileOutputStream(file);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
@@ -353,8 +330,7 @@ public class Graph implements Serializable{
         objectOutputStream.close();
     }
 
-    public void openGraph(File file) throws Exception{
-
+    public void openGraph(File file) throws Exception {
         FileInputStream fileInputStream = new FileInputStream(file);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
@@ -377,7 +353,7 @@ public class Graph implements Serializable{
         return connectionList;
     }
 
-    public void clearAll(){
+    public void clearAll() {
         vertexList.clear();
         connectionList.clear();
         graphMap.clear();

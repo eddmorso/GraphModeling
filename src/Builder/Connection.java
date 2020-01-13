@@ -3,7 +3,6 @@ package Builder;
 import java.io.Serializable;
 
 public class Connection extends GraphElement implements Serializable {
-
     private Vertex startVertex, endVertex;
     private String connectionName;
 
